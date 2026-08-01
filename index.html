@@ -682,63 +682,65 @@
           </div>
         </div>
 
-        <!-- Dynamic Bento Grid Strategy Cards -->
-        <div class="flex flex-col md:flex-row gap-4 transition-all duration-500 min-h-[150px]" id="org-bento-container">
-          <div onclick="selectOrgStrategy('content')" id="org-card-content" class="flex-[2] p-5 bg-glass/90 border-2 border-lavender rounded-2xl cursor-pointer transition-all duration-500 shadow-xl shadow-purple-950/30 flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center space-x-2">
-                <span class="text-xl">📁</span>
-                <h3 class="font-bold text-white text-base">By Content</h3>
-              </div>
-              <span class="font-mono text-[10px] font-bold bg-lavender/20 text-lavender border border-lavender/40 px-2 py-0.5 rounded-full" id="bento-badge-content">ACTIVE</span>
+        <!-- Clean Selectable Strategy Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="org-strategy-grid">
+          
+          <div onclick="selectOrgStrategy('content')" id="org-card-content" class="p-5 bg-glass/90 border-2 border-lavender rounded-2xl cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">📁</span>
+              <span class="font-mono text-[10px] font-bold text-mint bg-emerald-950/90 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-content">ACTIVE</span>
             </div>
-            <p class="text-xs text-slate-300 leading-relaxed" id="bento-desc-content">Categorize by document essence (Invoices, Reports, Photos, Code, Work, Personal).</p>
-            <div class="pt-2 font-mono text-[10px] text-mint flex items-center space-x-1" id="bento-sample-content">
-              <span>Sample:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Invoices/ | /Photos/</span>
+            <div>
+              <h3 class="font-bold text-white text-sm mb-1">By Content</h3>
+              <p class="text-xs text-slate-300 leading-relaxed">Categorize by document essence (Invoices, Reports, Photos, Code, Work, Personal).</p>
             </div>
-          </div>
-
-          <div onclick="selectOrgStrategy('modifier')" id="org-card-modifier" class="flex-1 p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-500 opacity-80 hover:opacity-100 flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center space-x-2">
-                <span class="text-xl">📅</span>
-                <h3 class="font-bold text-white text-base">Modifier</h3>
-              </div>
-              <span class="hidden font-mono text-[10px] font-bold bg-lavender/20 text-lavender border border-lavender/40 px-2 py-0.5 rounded-full" id="bento-badge-modifier">ACTIVE</span>
-            </div>
-            <p class="text-xs text-slate-400 leading-relaxed truncate" id="bento-desc-modifier">Year/Month subfolders.</p>
-            <div class="hidden pt-2 font-mono text-[10px] text-mint flex items-center space-x-1" id="bento-sample-modifier">
-              <span>Sample:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/2026-08/</span>
+            <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
+              <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Invoices/ | /Photos/</span>
             </div>
           </div>
 
-          <div onclick="selectOrgStrategy('nesting')" id="org-card-nesting" class="flex-1 p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-500 opacity-80 hover:opacity-100 flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center space-x-2">
-                <span class="text-xl">🌳</span>
-                <h3 class="font-bold text-white text-base">Deep Nesting</h3>
-              </div>
-              <span class="hidden font-mono text-[10px] font-bold bg-lavender/20 text-lavender border border-lavender/40 px-2 py-0.5 rounded-full" id="bento-badge-nesting">ACTIVE</span>
+          <div onclick="selectOrgStrategy('modifier')" id="org-card-modifier" class="p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-300 hover:border-slate-500 opacity-75 hover:opacity-100 flex flex-col justify-between space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">📅</span>
+              <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950/90 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-modifier">ACTIVE</span>
             </div>
-            <p class="text-xs text-slate-400 leading-relaxed truncate" id="bento-desc-nesting">Category/Year/Ext.</p>
-            <div class="hidden pt-2 font-mono text-[10px] text-mint flex items-center space-x-1" id="bento-sample-nesting">
-              <span>Sample:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Media/2026/PNG/</span>
+            <div>
+              <h3 class="font-bold text-white text-sm mb-1">Modifier Date</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">Sort into Year/Month subfolders based on modification timestamp.</p>
+            </div>
+            <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
+              <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/2026-08_Aug/</span>
             </div>
           </div>
 
-          <div onclick="selectOrgStrategy('extensions')" id="org-card-extensions" class="flex-1 p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-500 opacity-80 hover:opacity-100 flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center space-x-2">
-                <span class="text-xl">🏷️</span>
-                <h3 class="font-bold text-white text-base">Extensions</h3>
-              </div>
-              <span class="hidden font-mono text-[10px] font-bold bg-lavender/20 text-lavender border border-lavender/40 px-2 py-0.5 rounded-full" id="bento-badge-extensions">ACTIVE</span>
+          <div onclick="selectOrgStrategy('nesting')" id="org-card-nesting" class="p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-300 hover:border-slate-500 opacity-75 hover:opacity-100 flex flex-col justify-between space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🌳</span>
+              <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950/90 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-nesting">ACTIVE</span>
             </div>
-            <p class="text-xs text-slate-400 leading-relaxed truncate" id="bento-desc-extensions">Sort by file extension.</p>
-            <div class="hidden pt-2 font-mono text-[10px] text-mint flex items-center space-x-1" id="bento-sample-extensions">
-              <span>Sample:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Images/ | /Documents/</span>
+            <div>
+              <h3 class="font-bold text-white text-sm mb-1">Deep Nesting</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">Complex hierarchical multi-tiered structure (Category/Year/Ext).</p>
+            </div>
+            <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
+              <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Media/2026/PNG/</span>
             </div>
           </div>
+
+          <div onclick="selectOrgStrategy('extensions')" id="org-card-extensions" class="p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-300 hover:border-slate-500 opacity-75 hover:opacity-100 flex flex-col justify-between space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🏷️</span>
+              <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950/90 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-extensions">ACTIVE</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm mb-1">Extensions</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">Sort by extension (.pdf, .jpg, .zip, .exe, .py, .mp4).</p>
+            </div>
+            <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
+              <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Images/ | /Documents/</span>
+            </div>
+          </div>
+
         </div>
 
         <!-- Folder Naming Scheme Selector Card -->
@@ -2359,28 +2361,14 @@
       strats.forEach(s => {
         const card = document.getElementById('org-card-' + s);
         const badge = document.getElementById('bento-badge-' + s);
-        const desc = document.getElementById('bento-desc-' + s);
-        const sample = document.getElementById('bento-sample-' + s);
 
         if (card) {
           if (s === stratKey) {
-            card.style.flex = "2.5";
-            card.style.opacity = "1";
-            card.style.borderColor = "#a855f7";
-            card.style.borderWidth = "2px";
-            card.style.boxShadow = "0 20px 25px -5px rgba(88, 28, 135, 0.4)";
+            card.className = "p-5 bg-glass/90 border-2 border-lavender rounded-2xl cursor-pointer transition-all duration-300 shadow-2xl shadow-purple-950/50 flex flex-col justify-between space-y-3 opacity-100 scale-[1.02]";
             if (badge) badge.classList.remove('hidden');
-            if (desc) desc.classList.remove('truncate');
-            if (sample) sample.classList.remove('hidden');
           } else {
-            card.style.flex = "1";
-            card.style.opacity = "0.75";
-            card.style.borderColor = "rgba(255, 255, 255, 0.1)";
-            card.style.borderWidth = "1px";
-            card.style.boxShadow = "none";
+            card.className = "p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-300 hover:border-slate-500 opacity-75 hover:opacity-100 flex flex-col justify-between space-y-3 scale-100";
             if (badge) badge.classList.add('hidden');
-            if (desc) desc.classList.add('truncate');
-            if (sample) sample.classList.add('hidden');
           }
         }
       });
