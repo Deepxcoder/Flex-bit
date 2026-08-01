@@ -1,0 +1,12 @@
+{
+  "latest_version": "2.5.0",
+  "release_date": "2026-08-01",
+  "download_url": "https://github.com/deepxcoder/flexbit-ai/releases/download/v2.5.0/FlexBit_AI_v2.5_Windows.zip",
+  "mandatory": false,
+  "changelog": [
+    "✨ FlexBit AI v2.5.0 Release",
+    "⚡ High-speed local AI vision processing & semantic media organization",
+    "🎯 Interactive workspace with real-time AI visual preview & natural language filters",
+    "🔄 Auto-updater engine with smooth update installation support"
+  ]
+}

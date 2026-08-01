@@ -1,0 +1,3500 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlexBit AI — Stitch Glassmorphic Edition</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            obsidian: '#080A10',
+            glass: '#101422',
+            glassBorder: '#1E2640',
+            lavender: '#C084FC',
+            lavenderFill: '#D8B4FE',
+            lavenderDark: '#090D16',
+            mint: '#2DD4BF',
+            roseAccent: '#F43F5E',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1E2640; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C084FC; }
+
+    .glow-purple {
+      background: radial-gradient(circle at 50% 0%, rgba(192, 132, 252, 0.12), transparent 70%);
+    }
+
+    /* Dynamic Collapsible Sidebar Styles */
+    aside.sidebar-dynamic {
+      width: 4.5rem; /* 72px compact */
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    aside.sidebar-dynamic:hover, aside.sidebar-dynamic:focus-within {
+      width: 16rem; /* 256px expanded */
+    }
+    aside.sidebar-expanded {
+      width: 16rem;
+      transition: width 0.3s ease;
+    }
+    aside.sidebar-compact {
+      width: 4.5rem;
+      transition: width 0.3s ease;
+    }
+
+    aside.sidebar-compact .sidebar-text,
+    aside.sidebar-dynamic:not(:hover):not(:focus-within) .sidebar-text {
+      display: none !important;
+    }
+
+    /* Centered equal padding in collapsed sidebar mode */
+    aside.sidebar-compact nav button,
+    aside.sidebar-dynamic:not(:hover):not(:focus-within) nav button {
+      justify-content: center !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      width: 100% !important;
+    }
+
+    aside.sidebar-compact .sidebar-profile-card,
+    aside.sidebar-dynamic:not(:hover):not(:focus-within) .sidebar-profile-card {
+      border: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+      justify-content: center !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  </style>
+</head>
+<body class="bg-obsidian text-slate-100 font-sans antialiased select-none h-screen flex overflow-hidden glow-purple">
+
+  <!-- SAFE STABLE BACKGROUND THEME LAYER -->
+  <div id="app-bg-theme-layer" class="fixed inset-0 pointer-events-none -z-10 bg-obsidian transition-colors duration-700"></div>
+
+  <!-- GLOBAL PERSISTENT SIDEBAR -->
+  <aside id="main-sidebar" class="sidebar-dynamic bg-glass/80 backdrop-blur-xl border-r border-glassBorder flex flex-col justify-between p-4 z-20 shrink-0 select-none overflow-hidden">
+    <div>
+      <!-- Brand Header -->
+      <div class="mb-6 flex items-center justify-between">
+        <div class="flex items-center space-x-3 text-xl font-extrabold text-white tracking-tight min-w-0">
+          <span class="text-lavender text-2xl shrink-0">⚡</span>
+          <span class="sidebar-text truncate">FlexBit AI</span>
+        </div>
+      </div>
+
+      <!-- User Profile Badge -->
+      <!-- Global Navigation Links -->
+      <nav class="space-y-1.5">
+        <button onclick="switchScreen('screen-home')" id="nav-home" class="w-full flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 bg-slate-800/80 text-white border border-slate-700/50">
+          <span class="text-lg shrink-0">📂</span> <span class="sidebar-text truncate">My Library</span>
+        </button>
+        <button onclick="switchScreen('screen-history')" id="nav-history" class="w-full flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800/40">
+          <span class="text-lg shrink-0">📜</span> <span class="sidebar-text truncate">Recent Sessions</span>
+        </button>
+        <button onclick="switchScreen('screen-search')" id="nav-search" class="w-full flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800/40">
+          <span class="text-lg shrink-0">🔍</span> <span class="sidebar-text truncate">Search</span>
+        </button>
+        <button onclick="switchScreen('screen-settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800/40">
+          <span class="text-lg shrink-0">⚙️</span> <span class="sidebar-text truncate">Settings</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- SIDEBAR BOTTOM ACTIONS & LIVE PROGRESS -->
+    <div>
+      <!-- GLOBAL PERSISTENT SIDEBAR PROGRESS CARD -->
+      <div id="sidebar-progress-card" onclick="openTaskControlModal()" class="hidden mb-4 p-3 bg-obsidian/90 border border-lavender/40 hover:border-lavender rounded-xl space-y-2 backdrop-blur-md shadow-lg cursor-pointer transition-all">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[10px] font-bold text-lavender flex items-center space-x-1">
+            <span class="w-2 h-2 rounded-full bg-lavender animate-ping inline-block"></span>
+            <span id="sidebar-progress-phase">ANALYZING</span>
+          </span>
+          <span class="font-mono text-[10px] font-bold text-white" id="sidebar-progress-pct">0%</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+          <div id="sidebar-progress-fill" class="h-full bg-gradient-to-r from-purple-500 to-lavender w-0 transition-all duration-300"></div>
+        </div>
+        <div class="flex justify-between items-center sidebar-text">
+          <p class="font-mono text-[10px] text-slate-400 truncate flex-1" id="sidebar-progress-file">Processing files...</p>
+          <span class="text-[10px] font-bold text-rose-400 pl-1">🛑 Cancel</span>
+        </div>
+      </div>
+
+      <button onclick="switchScreen('screen-home')" class="w-full py-3 rounded-xl bg-lavenderFill hover:bg-lavender text-lavenderDark font-bold text-sm transition-all duration-200 shadow-lg shadow-purple-900/20 flex items-center justify-center space-x-2">
+        <span class="text-base">＋</span> <span class="sidebar-text">New Session</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    
+    <!-- TOP BAR TELEMETRY & ACCOUNTS -->
+    <header class="h-16 border-b border-glassBorder/60 px-8 flex items-center justify-between shrink-0 bg-obsidian/40 backdrop-blur-md z-10 relative">
+      <div class="flex items-center space-x-4">
+        <!-- HEADER LIVE PROGRESS BADGE -->
+        <div id="header-progress-container" onclick="openTaskControlModal()" class="hidden flex items-center space-x-3 pl-4 border-l border-slate-800 cursor-pointer hover:opacity-90 transition-opacity">
+          <span class="font-mono text-xs font-bold text-lavender animate-pulse" id="header-progress-phase">⚡ Processing...</span>
+          <div class="w-36 h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+            <div id="header-progress-fill" class="h-full bg-gradient-to-r from-teal-400 to-lavender w-0 transition-all duration-300"></div>
+          </div>
+          <span class="font-mono text-xs font-bold text-white" id="header-progress-pct">0%</span>
+          <span class="font-mono text-[11px] text-slate-400 truncate max-w-[160px]" id="header-progress-file"></span>
+          <span class="text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-800 px-2 py-0.5 rounded-md">🛑 Kill</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <!-- Help Center Header Button -->
+        <button id="header-help-btn" onclick="switchScreen('screen-help')" title="Open Official User Guide & Help Center" class="px-3 py-1.5 rounded-xl bg-glass/80 border border-glassBorder hover:border-lavender/60 flex items-center space-x-1.5 text-xs font-bold text-slate-200 hover:text-white transition-all shadow-md backdrop-blur-md">
+          <span>📖</span> <span>Help Center</span>
+        </button>
+        
+        <!-- Top-Right User Profile Badge -->
+        <div onclick="switchScreen('screen-account')" title="Open Account Profile & Settings" id="header-user-profile" class="px-3 py-1 rounded-xl bg-glass/80 border border-glassBorder hover:border-lavender/60 flex items-center space-x-2 cursor-pointer transition-all shadow-md backdrop-blur-md">
+          <div id="header-avatar-container" class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs border border-slate-700 shrink-0 overflow-hidden shadow-inner">
+            <span id="header-avatar-display">🤖</span>
+          </div>
+          <div class="min-w-0 flex flex-col text-left leading-tight">
+            <span class="font-bold text-xs text-slate-100 truncate max-w-[90px]" id="header-username">deep</span>
+            <span class="text-[9px] font-semibold text-mint truncate" id="header-usertier">Standard</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- GTA-STYLE FLOATING CHEAT CONSOLE OVERLAY -->
+    <div id="cheat-console-overlay" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl bg-obsidian/95 border-2 border-mint rounded-2xl p-4 shadow-2xl backdrop-blur-xl animate-bounce-short">
+      <div class="flex items-center space-x-3 font-mono text-xs">
+        <span class="text-mint font-bold text-sm shrink-0 flex items-center space-x-1"><span>⚡</span> <span>CHEAT &gt;</span></span>
+        <input type="text" id="cheat-input-field" placeholder="TYPE CHEAT CODE..." onkeydown="if(event.key==='Enter') executeCheatInput()" class="flex-1 bg-transparent text-white font-bold tracking-widest outline-none uppercase placeholder:text-slate-600 font-mono text-sm">
+        <button onclick="executeCheatInput()" class="px-4 py-1.5 bg-mint text-obsidian font-bold text-xs rounded-xl hover:bg-emerald-300 transition-all shadow-md">ACTIVATE</button>
+        <button onclick="toggleCheatConsole()" class="text-slate-400 hover:text-white text-xs px-2">✕</button>
+      </div>
+      <div id="cheat-console-status" class="mt-2 font-mono text-[10px] text-slate-400 truncate">Press ~ or ESC to close. Type DEACTIVATE to disable cheats.</div>
+    </div>
+
+    <!-- DYNAMIC NOTIFICATION DRAWER MODAL -->
+    <div id="notification-drawer" class="hidden absolute top-16 right-8 w-80 bg-obsidian/95 border border-glassBorder rounded-2xl p-4 shadow-2xl backdrop-blur-2xl z-30 space-y-3">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <span class="font-bold text-sm text-white flex items-center space-x-2"><span>🔔</span> <span>Activity Notifications</span></span>
+        <div class="flex items-center space-x-2">
+          <button onclick="clearAllNotifications()" class="text-[10px] text-slate-400 hover:text-rose-400 font-bold">Clear</button>
+          <button onclick="toggleNotifications()" class="text-xs text-slate-400 hover:text-white">✕</button>
+        </div>
+      </div>
+      <div id="notification-list-container" class="space-y-2 text-xs max-h-72 overflow-y-auto pr-1">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+    </div>
+
+    <!-- ACCOUNT MODAL -->
+    <div id="account-modal" onclick="if(event.target === this) closeAccountModal();" class="hidden fixed inset-0 bg-obsidian/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-glass border border-glassBorder rounded-3xl p-6 shadow-2xl space-y-5">
+        <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+          <h3 class="text-lg font-bold text-white">👤 Account & Profile Preferences</h3>
+          <button onclick="closeAccountModal()" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">User Name</label>
+            <input type="text" id="acc-username-input" class="w-full bg-obsidian border border-slate-700 rounded-xl p-2.5 text-sm text-white" value="deep">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">Experience Role Tier</label>
+            <select id="acc-tier-select" class="w-full bg-obsidian border border-slate-700 rounded-xl p-2.5 text-sm text-white">
+              <option value="Free Plan">Free Plan / Normal (Standard Confirmation Prompt)</option>
+              <option value="Newbie">Newbie (Non-destructive Preview Mode)</option>
+              <option value="Power User">Power User (Unrestricted Fast Processing)</option>
+            </select>
+          </div>
+        </div>
+        <div class="pt-2 flex justify-end space-x-3">
+          <button onclick="closeAccountModal()" class="px-4 py-2 rounded-xl border border-slate-700 text-xs font-semibold text-slate-300">Cancel</button>
+          <button onclick="saveAccountProfile()" class="px-5 py-2 rounded-xl bg-lavenderFill text-lavenderDark text-xs font-bold">Save Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WELCOME & FIRST TIME ONBOARDING SETUP WIZARD MODAL -->
+    <div id="welcome-wizard-modal" class="hidden fixed inset-0 bg-obsidian/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div class="w-full max-w-lg bg-glass border border-lavender/60 rounded-3xl p-7 shadow-2xl space-y-6">
+        <div class="text-center space-y-2">
+          <span class="text-4xl">⚡</span>
+          <h2 class="text-2xl font-extrabold text-white">Welcome to FlexBit AI</h2>
+          <p class="text-xs text-slate-400">Let's set up your profile and local vision model preferences.</p>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">What should we call you?</label>
+            <input type="text" id="wiz-username" value="deep" class="w-full bg-obsidian border border-slate-700 rounded-xl p-3 text-sm text-white font-semibold focus:border-lavender outline-none">
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Experience Role Tier</label>
+            <select id="wiz-usertier" class="w-full bg-obsidian border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-lavender outline-none">
+              <option value="Free Plan">Free Plan / Normal (Confirmation Modals)</option>
+              <option value="Newbie">Newbie (Non-destructive Preview Mode)</option>
+              <option value="Power User">Power User (Unrestricted High Speed)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Local Vision Language Engine</label>
+            <select id="wiz-provider" class="w-full bg-obsidian border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-lavender outline-none">
+              <option value="embedded">Embedded Moondream 2 GGUF (100% Offline)</option>
+              <option value="lm_studio">LM Studio Server API (localhost:1234)</option>
+              <option value="ollama">Ollama Server API (localhost:11434)</option>
+              <option value="local_gguf">Custom .GGUF Model File</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="finishOnboardingWizard()" class="w-full py-3.5 bg-lavenderFill hover:bg-lavender text-lavenderDark font-bold text-sm rounded-2xl shadow-lg shadow-purple-950/40 transition-all">🚀 Save Profile & Launch FlexBit AI</button>
+      </div>
+    </div>
+
+    <!-- AVATAR & PROFILE STUDIO MODAL -->
+    <div id="avatar-studio-modal" onclick="if(event.target === this) closeAvatarStudioModal();" class="hidden fixed inset-0 bg-obsidian/85 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <div class="w-full max-w-xl bg-glass border border-glassBorder rounded-3xl p-6 shadow-2xl space-y-5">
+        <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+          <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+            <span>🎨</span> <span>Profile & Custom Avatar Studio</span>
+          </h3>
+          <button onclick="closeAvatarStudioModal()" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-1">User Name</label>
+            <input type="text" id="studio-username-input" class="w-full bg-obsidian border border-slate-700 rounded-xl p-2.5 text-sm text-white font-semibold outline-none focus:border-lavender" value="deep">
+          </div>
+
+          <!-- 50 CUTE AVATAR OPTIONS GALLERY -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <label class="block text-xs font-bold text-slate-300">Choose your favorite avatar (50 Cute Avatar Options)</label>
+              <span class="text-[10px] font-bold text-mint font-mono" id="studio-session-count-lbl">0 Total Sessions Completed</span>
+            </div>
+            <div class="grid grid-cols-10 gap-2 max-h-48 overflow-y-auto p-2.5 bg-obsidian/80 border border-slate-800 rounded-2xl" id="avatar-gallery-grid">
+              <!-- Rendered dynamically by JS (50 cute options) -->
+            </div>
+          </div>
+
+          <!-- CUSTOM PHOTO CANVAS STUDIO (UPLOAD & POPUP EDITOR) -->
+          <div class="p-4 bg-obsidian border border-slate-800 rounded-2xl flex items-center justify-between">
+            <div class="space-y-0.5">
+              <h4 class="text-xs font-bold text-white flex items-center space-x-1.5">
+                <span>📷</span> <span>Custom Profile Avatar Image</span>
+              </h4>
+              <p class="text-[10px] text-slate-400">Upload any photo and adjust via interactive popup studio.</p>
+            </div>
+            <div class="flex space-x-2">
+              <input type="file" id="custom-avatar-file-input" accept="image/*" onchange="handleAvatarFileSelect(event)" class="hidden">
+              <button onclick="document.getElementById('custom-avatar-file-input').click()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center space-x-1.5">
+                <span>📁</span> <span>Upload Image</span>
+              </button>
+              <button onclick="openImageAdjustModal()" id="avatar-adjust-btn" class="hidden px-4 py-2 bg-lavenderFill hover:bg-lavender text-lavenderDark text-xs font-bold rounded-xl transition-all shadow-md flex items-center space-x-1.5">
+                <span>🎨</span> <span>Adjust Image</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-3">
+          <button onclick="closeAvatarStudioModal()" class="px-4 py-2 rounded-xl border border-slate-700 text-xs font-semibold text-slate-300">Cancel</button>
+          <button onclick="saveAvatarStudioProfile()" class="px-6 py-2 rounded-xl bg-lavenderFill text-lavenderDark text-xs font-bold shadow-lg shadow-purple-950/40">Save Profile & Avatar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERACTIVE IMAGE ADJUSTMENT POP-UP MODAL -->
+    <div id="image-adjust-popup-modal" onclick="if(event.target === this) closeImageAdjustModal();" class="hidden fixed inset-0 bg-obsidian/85 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-glass border border-glassBorder rounded-3xl p-6 shadow-2xl space-y-5">
+        <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+          <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+            <span>🎨</span> <span>Adjust & Customize Avatar Image</span>
+          </h3>
+          <button onclick="closeImageAdjustModal()" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+
+        <div class="flex flex-col items-center space-y-4">
+          <!-- Interactive Drag-to-Move Canvas Container -->
+          <div class="relative group cursor-grab">
+            <div class="w-36 h-36 rounded-full border-4 border-lavender overflow-hidden bg-slate-900 shadow-2xl flex items-center justify-center relative">
+              <canvas id="avatar-studio-canvas" width="160" height="160" class="w-full h-full object-cover"></canvas>
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                <span class="text-xs font-bold text-white bg-slate-900/90 px-2 py-1 rounded-lg">✋ Drag to Move</span>
+              </div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 font-medium">Click & drag inside the circle to move image</span>
+
+          <!-- Image Adjust Controls: Rotate, Zoom, Filter -->
+          <div class="w-full space-y-3 bg-obsidian/60 border border-slate-800 p-4 rounded-2xl text-xs">
+            <!-- Rotate -->
+            <div class="flex items-center justify-between">
+              <span class="text-slate-300 font-bold">Rotate Orientation:</span>
+              <button onclick="rotateAvatarCanvas()" class="px-4 py-1.5 bg-slate-900 border border-slate-700 hover:border-lavender text-white rounded-xl font-bold transition-all flex items-center space-x-1.5">
+                <span>🔄</span> <span>Rotate 90°</span>
+              </button>
+            </div>
+
+            <!-- Zoom / Scale -->
+            <div>
+              <div class="flex justify-between text-slate-300 font-bold mb-1">
+                <span>Zoom / Scale:</span>
+                <span id="avatar-zoom-lbl" class="font-mono text-mint">1.0x</span>
+              </div>
+              <input type="range" id="avatar-zoom-slider" min="1.0" max="3.0" step="0.1" value="1.0" oninput="scaleAvatarCanvas(this.value)" class="w-full accent-lavender h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+            </div>
+
+            <!-- Filters -->
+            <div>
+              <span class="block text-slate-300 font-bold mb-1">Filter Effects:</span>
+              <select id="avatar-filter-select" onchange="applyAvatarFilter(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-lavender">
+                <option value="none">Normal (Original Colors)</option>
+                <option value="neon">Neon Glow (Vibrant Cyber)</option>
+                <option value="cyberpunk">Cyberpunk HSL (Purple / Cyan)</option>
+                <option value="grayscale">Obsidian Grayscale</option>
+                <option value="sepia">Vintage Warm Sepia</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-3">
+          <button onclick="closeImageAdjustModal()" class="px-4 py-2 rounded-xl border border-slate-700 text-xs font-semibold text-slate-300 hover:bg-slate-900">Cancel</button>
+          <button onclick="applyImageAdjustModal()" class="px-6 py-2 rounded-xl bg-lavenderFill hover:bg-lavender text-lavenderDark text-xs font-bold shadow-lg shadow-purple-950/40 transition-all">Save & Apply Image</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK CONTROL & CANCELLATION MODAL -->
+    <div id="task-control-modal" onclick="if(event.target === this) closeTaskControlModal();" class="hidden fixed inset-0 bg-obsidian/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-glass border border-glassBorder rounded-3xl p-6 shadow-2xl space-y-5">
+        <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+          <h3 class="text-lg font-bold text-white flex items-center space-x-2"><span>⚡</span> <span>Active Batch Task Manager</span></h3>
+          <button onclick="closeTaskControlModal()" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+        <div class="space-y-4">
+          <div class="p-4 bg-obsidian rounded-2xl border border-slate-800 space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-mono text-xs font-bold text-lavender uppercase" id="task-modal-phase">ANALYZING PHASE</span>
+              <span class="font-mono text-xs font-bold text-white" id="task-modal-pct">0%</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+              <div id="task-modal-fill" class="h-full bg-gradient-to-r from-teal-400 to-lavender w-0 transition-all duration-300"></div>
+            </div>
+            <p class="font-mono text-xs text-slate-300 truncate" id="task-modal-file">Processing files...</p>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">Safety Notice: Each workspace directory runs 1 batch process at a time to prevent file handle locking and path conflicts.</p>
+        </div>
+        <div class="pt-2 flex justify-between items-center">
+          <button onclick="closeTaskControlModal()" class="px-4 py-2 rounded-xl border border-slate-700 text-xs font-semibold text-slate-300">Close Window</button>
+          <button onclick="cancelActiveBatchTask()" class="px-5 py-2.5 rounded-xl bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300 text-xs font-bold shadow-lg">🛑 Cancel / Kill Active Task</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCROLLABLE SCREENS VIEWPORT -->
+    <div class="flex-1 overflow-y-auto p-8 relative">
+
+      <!-- ========================================== -->
+      <!-- SCREEN 1: HOMEPAGE DASHBOARD HUB -->
+      <!-- ========================================== -->
+      <section id="screen-home" class="screen-view h-full flex flex-col items-center justify-center">
+        <div class="w-full max-w-2xl bg-glass/60 border border-glassBorder rounded-3xl p-10 backdrop-blur-2xl text-center shadow-2xl">
+          <h2 class="text-3xl font-extrabold text-white mb-8 tracking-tight">What would you like to do?</h2>
+          
+          <div class="space-y-4 text-left">
+            <!-- Module 1 Card: Renaming photos -->
+            <div onclick="switchScreen('screen-image-studio')" class="group p-5 bg-obsidian/80 border border-glassBorder hover:border-lavender/80 rounded-2xl cursor-pointer transition-all duration-300 flex items-center space-x-5 hover:scale-[1.01] hover:shadow-xl hover:shadow-purple-950/30">
+              <div class="w-12 h-12 rounded-full bg-purple-950/80 border border-purple-800/50 flex items-center justify-center text-xl text-lavender group-hover:scale-110 transition-transform">
+                ✏️
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white group-hover:text-lavender transition-colors">Renaming the photos</h3>
+                <p class="text-sm text-slate-400">AI-powered descriptive filenames based on content.</p>
+              </div>
+            </div>
+
+            <!-- Module 2 Card: Organizing files -->
+            <div onclick="switchScreen('screen-file-org')" class="group p-5 bg-obsidian/80 border border-glassBorder hover:border-mint/80 rounded-2xl cursor-pointer transition-all duration-300 flex items-center space-x-5 hover:scale-[1.01] hover:shadow-xl hover:shadow-teal-950/30">
+              <div class="w-12 h-12 rounded-full bg-teal-950/80 border border-teal-800/50 flex items-center justify-center text-xl text-mint group-hover:scale-110 transition-transform">
+                ⊞
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white group-hover:text-mint transition-colors">Organizing the files</h3>
+                <p class="text-sm text-slate-400">Automatically sort media into structured folders.</p>
+              </div>
+            </div>
+
+            <!-- Module 3 Card: Cleaning junk -->
+            <div onclick="switchScreen('screen-junk')" class="group p-5 bg-obsidian/80 border border-glassBorder hover:border-rose-500/80 rounded-2xl cursor-pointer transition-all duration-300 flex items-center space-x-5 hover:scale-[1.01] hover:shadow-xl hover:shadow-rose-950/30">
+              <div class="w-12 h-12 rounded-full bg-rose-950/80 border border-rose-800/50 flex items-center justify-center text-xl text-rose-400 group-hover:scale-110 transition-transform">
+                🗑️
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white group-hover:text-rose-400 transition-colors">Cleaning junk</h3>
+                <p class="text-sm text-slate-400">Remove blurry shots and temporary cache files.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 2: IMAGE STUDIO -->
+      <!-- ========================================== -->
+      <section id="screen-image-studio" class="screen-view hidden max-w-5xl mx-auto space-y-6 pb-28">
+        <!-- Top Header & Stepper -->
+        <div class="flex items-center space-x-6">
+          <div class="flex items-center space-x-2 font-mono text-xs text-slate-400">
+            <span class="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center font-bold">1</span>
+            <span class="w-8 h-[2px] bg-slate-800"></span>
+            <span class="w-8 h-8 rounded-full border-2 border-lavender bg-glass flex items-center justify-center font-bold text-white">2</span>
+            <span class="w-8 h-[2px] bg-slate-800"></span>
+            <span class="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center font-bold">3</span>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">Style & Formatting</h2>
+            <p class="text-sm text-slate-400">Define how the AI should reconstruct file identities.</p>
+          </div>
+        </div>
+
+        <!-- Simplified Naming Scheme Cards -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 backdrop-blur-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2"><span>🪄</span> <span>AI Naming Scheme Preset</span></h3>
+            <span class="font-mono text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/60 px-2.5 py-0.5 rounded-full">AI POWERED</span>
+          </div>
+          <p class="text-xs text-slate-400">Choose how the AI should generate filenames for your photos.</p>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div onclick="selectPersonality('natural')" id="pcard-natural" class="p-4 bg-obsidian border-2 border-lavender rounded-xl cursor-pointer transition-all">
+              <span class="font-mono text-[10px] text-lavender font-bold block mb-1">RECOMMENDED</span>
+              <h4 class="font-bold text-white text-sm mb-1">📝 Descriptive Sentence</h4>
+              <p class="font-mono text-[11px] text-slate-400 truncate">Golden retriever in sunset wheat field.jpg</p>
+            </div>
+
+            <div onclick="selectPersonality('efficiency')" id="pcard-efficiency" class="p-4 bg-obsidian border border-glassBorder rounded-xl cursor-pointer transition-all hover:border-slate-600">
+              <span class="font-mono text-[10px] text-slate-400 font-bold block mb-1">MINIMAL</span>
+              <h4 class="font-bold text-white text-sm mb-1">🏷️ Keyword Tags</h4>
+              <p class="font-mono text-[11px] text-slate-400 truncate">golden_retriever_wheat_field.png</p>
+            </div>
+
+            <div onclick="selectPattern('timestamps')" id="pat-timestamps" class="p-4 bg-obsidian border border-glassBorder rounded-xl cursor-pointer transition-all hover:border-slate-600">
+              <span class="font-mono text-[10px] text-slate-400 font-bold block mb-1">TEMPORAL</span>
+              <h4 class="font-bold text-white text-sm mb-1">📅 Date &amp; Counter</h4>
+              <p class="font-mono text-[11px] text-slate-400 truncate">2026-08-01_001_golden_retriever.jpg</p>
+            </div>
+
+            <div onclick="selectPattern('vibrant')" id="pat-vibrant" class="p-4 bg-obsidian border border-glassBorder rounded-xl cursor-pointer transition-all hover:border-slate-600">
+              <span class="font-mono text-[10px] text-slate-400 font-bold block mb-1">EXPRESSIVE</span>
+              <h4 class="font-bold text-white text-sm mb-1">✨ Emoji &amp; Date</h4>
+              <p class="font-mono text-[11px] text-slate-400 truncate">📸_2026-08-01_golden_retriever.png</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Language Script & Tone Toggles -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-glass/80 border border-glassBorder rounded-2xl p-5 backdrop-blur-xl space-y-2">
+            <h4 class="text-xs font-bold text-white flex items-center space-x-1.5"><span>🗣️</span> <span>Language Script</span></h4>
+            <div class="grid grid-cols-3 gap-2 text-xs">
+              <label class="p-2.5 bg-obsidian border border-glassBorder rounded-xl flex items-center space-x-2 cursor-pointer">
+                <input type="radio" name="lang-script" value="English" checked onchange="updatePreviewChip()" class="accent-lavender">
+                <span class="font-bold text-white text-xs">English</span>
+              </label>
+              <label class="p-2.5 bg-obsidian border border-glassBorder rounded-xl flex items-center space-x-2 cursor-pointer">
+                <input type="radio" name="lang-script" value="Hinglish" onchange="updatePreviewChip()" class="accent-lavender">
+                <span class="font-bold text-white text-xs">Hinglish</span>
+              </label>
+              <label class="p-2.5 bg-obsidian border border-glassBorder rounded-xl flex items-center space-x-2 cursor-pointer">
+                <input type="radio" name="lang-script" value="Gujlish" onchange="updatePreviewChip()" class="accent-lavender">
+                <span class="font-bold text-white text-xs">Gujlish</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-glass/80 border border-glassBorder rounded-2xl p-5 backdrop-blur-xl space-y-2">
+            <h4 class="text-xs font-bold text-white flex items-center space-x-1.5"><span>🎭</span> <span>Creative Style Tone</span></h4>
+            <select id="persona-select" onchange="updatePreviewChip(); updateLivePreview();" class="w-full bg-obsidian border border-slate-700 text-xs rounded-xl p-2.5 text-slate-200 font-semibold outline-none focus:border-lavender">
+              <option value="Normal Mode 🖼️">Normal Mode 🖼️</option>
+              <option value="Gamer Mode 🎮">Gamer Mode 🎮</option>
+              <option value="Movie Mode 🍿">Movie Mode 🍿</option>
+              <option value="Music Mode 🎵">Music Mode 🎵</option>
+              <option value="Poetic Mode 🌌">Poetic Mode 🌌</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Sticky Glass Bottom Preview Bar -->
+        <div class="sticky bottom-4 z-20 bg-glass/95 border border-glassBorder rounded-2xl p-4 flex items-center justify-between shadow-2xl backdrop-blur-2xl">
+          <div>
+            <span class="font-mono text-[10px] font-bold text-slate-400 uppercase block mb-0.5">PREVIEW OUTPUT</span>
+            <span class="font-mono text-sm font-bold text-white bg-slate-950 border border-slate-800 px-3.5 py-1 rounded-lg block" id="output-chip-lbl">📸_2026-05_Golden_Retriever_Wheat_Field.jpg</span>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button onclick="switchScreen('screen-home')" class="px-5 py-2.5 rounded-xl border border-glassBorder text-slate-300 hover:text-white hover:bg-slate-800 text-sm font-semibold transition-all">Back</button>
+            <button onclick="switchScreen('screen-execution')" class="px-6 py-2.5 rounded-xl bg-lavenderFill text-lavenderDark hover:bg-lavender text-sm font-bold shadow-lg shadow-purple-900/30 transition-all">Next Step</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 3: EXECUTION PROTOCOL -->
+      <!-- ========================================== -->
+      <section id="screen-execution" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
+        <div>
+          <span class="font-mono text-xs font-bold text-mint">Module 1: Image Studio  /  Step 3: Target & Execution</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1 tracking-tight">Execution Protocol</h2>
+          <p class="text-sm text-slate-400">Deploying deep neural networks to analyze, categorize, and rename your visual assets with surgical precision.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          <!-- Left Column: Workspace Directory Target (5 cols) -->
+          <div class="md:col-span-5 space-y-4">
+            <div onclick="selectDirectory()" class="bg-glass/80 border border-glassBorder hover:border-lavender/80 rounded-2xl p-6 cursor-pointer transition-all shadow-xl space-y-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-2xl bg-purple-950/80 border border-purple-800/60 flex items-center justify-center text-2xl text-lavender shrink-0">📁</div>
+                <div>
+                  <h3 class="text-base font-bold text-white">Target Workspace Folder</h3>
+                  <p class="text-xs text-slate-400">Click to browse &amp; select active directory</p>
+                </div>
+              </div>
+              <div class="p-3.5 bg-obsidian rounded-xl border border-slate-800">
+                <span class="font-mono text-[10px] font-bold text-lavender uppercase block mb-1">ACTIVE DIRECTORY</span>
+                <p class="font-mono text-xs text-white truncate" id="execution-dir-label">No directory selected. Click to browse.</p>
+              </div>
+              <button onclick="event.stopPropagation(); selectDirectory();" class="w-full py-2.5 bg-slate-900 border border-slate-700 hover:border-lavender rounded-xl text-xs font-bold text-white transition-all flex items-center justify-center space-x-2 shadow-sm">
+                <span>📁</span> <span>Change Target Folder</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Asset Preview Panel (7 cols) -->
+          <div class="md:col-span-7 bg-glass/80 border border-glassBorder rounded-2xl p-5 shadow-xl flex flex-col h-[340px]">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-800 shrink-0 mb-3">
+              <span class="text-xs font-bold text-white flex items-center space-x-2"><span>👁️</span> <span>LIVE ASSET PREVIEW</span></span>
+              <span class="font-mono text-[10px] bg-slate-950 text-slate-400 px-2.5 py-1 rounded-md border border-slate-800" id="preview-detected-count">0 Assets Detected</span>
+            </div>
+            <!-- LIVE PREVIEW CONTAINER (DYNAMIC REAL FILES) -->
+            <div class="space-y-2 flex-1 overflow-y-auto pr-1" id="live-preview-container">
+              <div class="p-8 text-center text-slate-500 text-xs">
+                Select a directory on the left to inspect live file previews.
+              </div>
+            </div>
+          </div>
+        </div><!-- END grid-cols-12 -->
+
+        <!-- MODULE 1 IN-SITU LIVE TELEMETRY BANNER -->
+        <div id="mod-prog-banner-exec" class="hidden bg-obsidian/90 border border-lavender/60 rounded-2xl p-5 space-y-3 backdrop-blur-xl shadow-2xl">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-lavender flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-lavender animate-ping inline-block"></span>
+              <span id="mod-prog-phase-exec">ANALYZING PHASE</span>
+            </span>
+            <span class="font-mono text-xs font-bold text-white bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg" id="mod-prog-badge-exec">⚡ [ 0 / 0 Assets ] • 0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+            <div id="mod-prog-fill-exec" class="h-full bg-gradient-to-r from-purple-500 via-lavender to-mint w-0 transition-all duration-300"></div>
+          </div>
+          <p class="font-mono text-xs text-slate-300 truncate" id="mod-prog-file-exec">Processing visual assets...</p>
+        </div>
+
+        <!-- MODULE 1 INSTANT INLINE UNDO BANNER -->
+        <div id="undo-banner-exec" class="hidden bg-emerald-950/60 border border-emerald-700/80 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+          <div class="flex items-center space-x-3">
+            <span class="text-2xl">✅</span>
+            <div>
+              <h4 class="font-bold text-emerald-200 text-sm">All done! Your files have been renamed.</h4>
+              <p class="text-xs text-emerald-300/80" id="undo-banner-desc-exec">Everything looks great. You can undo this anytime.</p>
+            </div>
+          </div>
+          <button onclick="undoLatestSession('exec')" class="px-5 py-2.5 bg-emerald-900 hover:bg-emerald-800 border border-emerald-600 text-white rounded-xl font-bold text-xs shadow-lg transition-all flex items-center space-x-2">
+            <span>⏪</span> <span>Undo</span>
+          </button>
+        </div>
+
+        <!-- MODULE 1 FINAL STEP DEPLOYMENT CONTROL CARD -->
+        <div id="execution-bottom-card" class="w-full bg-glass/90 border border-glassBorder rounded-3xl p-5 shadow-2xl backdrop-blur-xl">
+          <div class="flex flex-row items-center justify-between gap-4">
+            <!-- Left: Labels -->
+            <div class="flex-1 min-w-0">
+              <span class="font-mono text-[9px] font-extrabold text-lavender tracking-widest uppercase block mb-1">Final Step 3 of 3 · Start AI Renaming</span>
+              <h3 class="font-extrabold text-white text-base flex items-center space-x-2">
+                <span>🚀</span> <span>Ready — let's go!</span>
+              </h3>
+              <p class="text-[11px] text-slate-400 mt-0.5" id="expected-duration-lbl">Select a folder above to see estimated time.</p>
+            </div>
+            <!-- Right: Action Buttons -->
+            <div class="flex items-center gap-3 shrink-0">
+              <button onclick="switchScreen('screen-image-studio')" class="px-5 py-2.5 rounded-xl border border-slate-700 bg-obsidian hover:bg-slate-800 text-slate-200 text-xs font-bold transition-all shadow-md whitespace-nowrap">⬅️ Step Back: Naming Presets</button>
+              <button onclick="saveSettingsFromUI()" class="px-5 py-2.5 rounded-xl border border-slate-700 bg-obsidian hover:bg-slate-800 text-slate-200 text-xs font-bold transition-all shadow-md whitespace-nowrap">💾 Save Config</button>
+              <button onclick="runBatchAction()" id="batch-action-btn" class="px-7 py-2.5 rounded-xl bg-lavenderFill hover:bg-lavender text-lavenderDark text-sm font-extrabold shadow-xl shadow-purple-950/50 transition-all transform hover:scale-[1.02] whitespace-nowrap">⚡ Start AI Renaming</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- SCREEN 4: FILE ORGANIZATION (INTERACTIVE EXPLORER) -->
+      <!-- ========================================== -->
+      <section id="screen-file-org" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="font-mono text-xs font-bold text-mint uppercase">MODULE 2: FILE ORGANIZATION</span>
+            <h2 class="text-3xl font-extrabold text-white mt-1">Organizational Strategy</h2>
+            <p class="text-sm text-slate-400">Select a core logic for your automated workspace restructuring and explore subfolders.</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button onclick="switchScreen('screen-home')" class="px-4 py-2 bg-slate-900 border border-slate-700 hover:border-lavender text-slate-200 text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 shadow-sm">
+              <span>⬅️</span> <span>Back to Home</span>
+            </button>
+            <span class="font-mono text-[11px] font-bold text-mint bg-emerald-950/80 border border-emerald-800 px-3 py-2 rounded-xl flex items-center space-x-1.5">
+              <span>🛡️</span> <span>Safe Protocol Active</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Dynamic Bento Grid Strategy Cards -->
+        <div class="flex flex-col md:flex-row gap-4 transition-all duration-500 min-h-[150px]" id="org-bento-container">
+          <div onclick="selectOrgStrategy('content')" id="org-card-content" class="flex-[2] p-5 bg-glass/90 border-2 border-lavender rounded-2xl cursor-pointer transition-all duration-500 shadow-xl shadow-purple-950/30 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-xl">📁</span>
+                <h3 class="font-bold text-white text-base">By Content</h3>
+              </div>
+              <span class="font-mono text-[10px] font-bold bg-lavender/20 text-lavender border border-lavender/40 px-2 py-0.5 rounded-full" id="bento-badge-content">ACTIVE</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed" id="bento-desc-content">Categorize by document essence (Invoices, Reports, Photos, Code, Work, Personal).</p>
+            <div class="pt-2 font-mono text-[10px] text-mint flex items-center space-x-1" id="bento-sample-content">
+              <span>Sample:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Invoices/ | /Photos/</span>
+            </div>
+          </div>
+
+          <div onclick="selectOrgStrategy('modifier')" id="org-card-modifier" class="flex-1 p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-500 opacity-80 hover:opacity-100 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-xl">📅</span>
+                <h3 class="font-bold text-white text-base">Modifier</h3>
+              </div>
+              <span class="hidden font-mono text-[10px] font-bold bg-lavender/20 text-lavender border border-lavender/40 px-2 py-0.5 rounded-full" id="bento-badge-modifier">ACTIVE</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed truncate" id="bento-desc-modifier">Year/Month subfolders.</p>
+            <div class="hidden pt-2 font-mono text-[10px] text-mint flex items-center space-x-1" id="bento-sample-modifier">
+              <span>Sample:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/2026-08/</span>
+            </div>
+          </div>
+
+          <div onclick="selectOrgStrategy('nesting')" id="org-card-nesting" class="flex-1 p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-500 opacity-80 hover:opacity-100 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-xl">🌳</span>
+                <h3 class="font-bold text-white text-base">Deep Nesting</h3>
+              </div>
+              <span class="hidden font-mono text-[10px] font-bold bg-lavender/20 text-lavender border border-lavender/40 px-2 py-0.5 rounded-full" id="bento-badge-nesting">ACTIVE</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed truncate" id="bento-desc-nesting">Category/Year/Ext.</p>
+            <div class="hidden pt-2 font-mono text-[10px] text-mint flex items-center space-x-1" id="bento-sample-nesting">
+              <span>Sample:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Media/2026/PNG/</span>
+            </div>
+          </div>
+
+          <div onclick="selectOrgStrategy('extensions')" id="org-card-extensions" class="flex-1 p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-500 opacity-80 hover:opacity-100 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-xl">🏷️</span>
+                <h3 class="font-bold text-white text-base">Extensions</h3>
+              </div>
+              <span class="hidden font-mono text-[10px] font-bold bg-lavender/20 text-lavender border border-lavender/40 px-2 py-0.5 rounded-full" id="bento-badge-extensions">ACTIVE</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed truncate" id="bento-desc-extensions">Sort by file extension.</p>
+            <div class="hidden pt-2 font-mono text-[10px] text-mint flex items-center space-x-1" id="bento-sample-extensions">
+              <span>Sample:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Images/ | /Documents/</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder Naming Scheme Selector Card -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 backdrop-blur-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center space-x-2"><span>🏷️</span> <span>Folder Naming Scheme</span></h3>
+            <span class="font-mono text-[10px] font-bold text-mint bg-emerald-950 border border-emerald-800 px-2.5 py-0.5 rounded-full">STRUCTURE PRESET</span>
+          </div>
+          <p class="text-xs text-slate-400">Choose how target subfolders are named and formatted during organization.</p>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            <div onclick="selectOrgNamingScheme('standard')" id="org-nscheme-standard" class="p-3 bg-obsidian border-2 border-lavender rounded-xl flex flex-col cursor-pointer transition-all">
+              <span class="font-bold text-white text-xs">📁 Standard Title</span>
+              <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/Photos, /Documents, /Code</span>
+            </div>
+
+            <div onclick="selectOrgNamingScheme('lowercase')" id="org-nscheme-lowercase" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
+              <span class="font-bold text-white text-xs">🏷️ Clean Lowercase</span>
+              <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/photos, /documents, /code</span>
+            </div>
+
+            <div onclick="selectOrgNamingScheme('emoji')" id="org-nscheme-emoji" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
+              <span class="font-bold text-white text-xs">✨ Emoji Folders</span>
+              <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/🖼️ Photos, /📄 Documents</span>
+            </div>
+
+            <div onclick="selectOrgNamingScheme('dated')" id="org-nscheme-dated" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
+              <span class="font-bold text-white text-xs">📅 Dated Prefix</span>
+              <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/2026-08_Photos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE IN-SITU LIVE TELEMETRY BANNER FOR FILE ORG -->
+        <div id="mod-prog-banner-org" class="hidden bg-obsidian/90 border border-lavender/60 rounded-2xl p-5 space-y-3 backdrop-blur-xl shadow-2xl">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-lavender flex items-center space-x-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-lavender animate-ping inline-block"></span>
+              <span id="mod-prog-phase-org">ANALYZING PHASE</span>
+            </span>
+            <span class="font-mono text-xs font-bold text-white bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg" id="mod-prog-badge-org">⚡ [ 0 / 0 Files ] • 0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+            <div id="mod-prog-fill-org" class="h-full bg-gradient-to-r from-purple-500 via-lavender to-mint w-0 transition-all duration-300"></div>
+          </div>
+          <p class="font-mono text-xs text-slate-300 truncate" id="mod-prog-file-org">Organizing workspace files...</p>
+        </div>
+
+        <!-- MODULE 2 INSTANT INLINE UNDO BANNER -->
+        <div id="undo-banner-org" class="hidden bg-emerald-950/60 border border-emerald-700/80 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+          <div class="flex items-center space-x-3">
+            <span class="text-2xl">✅</span>
+            <div>
+              <h4 class="font-bold text-emerald-200 text-sm">File Organization Completed Successfully!</h4>
+              <p class="text-xs text-emerald-300/80" id="undo-banner-desc-org">Files grouped into smart subfolders. Revertible anytime.</p>
+            </div>
+          </div>
+          <button onclick="undoLatestSession('org')" class="px-5 py-2.5 bg-emerald-900 hover:bg-emerald-800 border border-emerald-600 text-white rounded-xl font-bold text-xs shadow-lg transition-all flex items-center space-x-2">
+            <span>⏪</span> <span>Undo Last Action</span>
+          </button>
+        </div>
+
+        <!-- Interactive Directory Explorer Container -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 backdrop-blur-xl space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div class="flex items-center space-x-3 min-w-0">
+              <button onclick="navigateOrgParent()" class="px-3 py-1.5 bg-slate-900 border border-slate-700 hover:border-slate-500 rounded-lg text-xs font-bold text-slate-300">⬆ Up Level</button>
+              <span class="font-mono text-xs font-bold text-slate-300 truncate" id="org-current-path-lbl">Directory: No folder selected</span>
+            </div>
+            <button onclick="selectOrgDirectory()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold">📁 Change Folder</button>
+          </div>
+
+          <!-- Folder Tree Grid -->
+          <div id="org-explorer-tree" class="grid grid-cols-3 gap-3 max-h-60 overflow-y-auto p-1">
+            <p class="text-slate-500 text-xs col-span-3">Click 'Select Directory & Organize Files' below to start organizing.</p>
+          </div>
+        </div>
+
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-5 flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-white text-base">Ready for File Organization</h3>
+            <p class="text-xs text-slate-400">Selected Strategy: <span id="org-selected-strat-lbl" class="text-mint font-bold uppercase">BY CONTENT</span></p>
+          </div>
+          <button onclick="runFileOrganizationAction()" id="org-batch-btn" class="px-7 py-3 rounded-xl bg-lavenderFill hover:bg-lavender text-lavenderDark text-sm font-bold shadow-lg shadow-purple-900/30 transition-all">⚡ Select Directory & Organize Files</button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 5: JUNK QUARANTINE -->
+      <!-- ========================================== -->
+      <section id="screen-junk" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
+        <div>
+          <span class="font-mono text-xs font-bold text-mint uppercase">MODULE 3: VISION AI JUNK QUARANTINE</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Cleaning & Quarantine Depth</h2>
+          <p class="text-sm text-slate-400">Select your workspace target folder, then pick precision cleanup mode.</p>
+        </div>
+
+        <!-- ACTIVE WORKSPACE TARGET BANNER FOR CLEANING -->
+        <div class="bg-obsidian border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-lg">
+          <div class="flex items-center space-x-3 min-w-0">
+            <span class="text-xl shrink-0">📁</span>
+            <div class="min-w-0">
+              <span class="text-[10px] font-mono font-bold text-lavender uppercase block">TARGET CLEANING FOLDER</span>
+              <p id="junk-dir-label" class="text-xs font-mono text-white truncate">No folder selected. Click Select Folder to pick your target.</p>
+            </div>
+          </div>
+          <button onclick="selectDirectoryForJunk()" class="px-4 py-2 bg-slate-900 border border-slate-700 hover:border-lavender text-white font-bold text-xs rounded-xl shrink-0 transition-all shadow-sm flex items-center space-x-1.5">
+            <span>📁</span> <span>Select Folder</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 min-h-[340px]">
+          <!-- Light Clean Card -->
+          <div onclick="selectJunkDepth('light')" id="junk-card-light" class="p-8 bg-glass/80 border border-glassBorder rounded-2xl flex flex-col items-center text-center justify-between cursor-pointer">
+            <div class="flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center text-3xl mb-4">⬇️</div>
+              <h3 class="text-xl font-bold text-white mb-2">Light Clean</h3>
+              <p class="text-sm text-slate-400 max-w-xs mb-6">Focus on .tmp, .log, installer packages, and 0-byte temporary cache files.</p>
+            </div>
+            <button onclick="event.stopPropagation(); selectJunkDepth('light'); runJunkQuarantine('light');" class="w-full py-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-lavender font-bold text-xs text-white transition-all">Select Light Precision</button>
+          </div>
+
+          <!-- Deep Clean Card -->
+          <div onclick="selectJunkDepth('deep')" id="junk-card-deep" class="p-8 bg-glass/80 border-2 border-lavender rounded-2xl flex flex-col items-center text-center justify-between cursor-pointer">
+            <div class="flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-slate-900 border-2 border-lavender flex items-center justify-center text-3xl mb-4">👁️</div>
+              <h3 class="text-xl font-bold text-white mb-2">Deep Clean</h3>
+              <p class="text-sm text-slate-400 max-w-xs mb-6">Powered by Vision AI. Scans for blurry photos, pitch-black shots, and duplicate screenshots.</p>
+            </div>
+            <button onclick="event.stopPropagation(); selectJunkDepth('deep'); runJunkQuarantine('deep');" class="w-full py-3 rounded-xl bg-lavenderFill text-lavenderDark font-bold text-xs hover:bg-lavender transition-all">Select AI Vision Scan</button>
+          </div>
+        </div>
+
+        <!-- MODULE 3 INSTANT INLINE UNDO BANNER -->
+        <div id="undo-banner-junk" class="hidden bg-emerald-950/60 border border-emerald-700/80 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+          <div class="flex items-center space-x-3">
+            <span class="text-2xl">🛡️</span>
+            <div>
+              <h4 class="font-bold text-emerald-200 text-sm">Junk Isolation Vault Created Successfully!</h4>
+              <p class="text-xs text-emerald-300/80" id="undo-banner-desc-junk">Junk files moved to .flexbit_quarantine vault. 100% revertible.</p>
+            </div>
+          </div>
+          <button onclick="undoLatestSession('junk')" class="px-5 py-2.5 bg-emerald-900 hover:bg-emerald-800 border border-emerald-600 text-white rounded-xl font-bold text-xs shadow-lg transition-all flex items-center space-x-2">
+            <span>⏪</span> <span>Undo Last Action</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 6: RECENT ACTIONS & SESSION UNDO VAULT -->
+      <!-- ========================================== -->
+      <section id="screen-history" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-2xl font-bold text-white">📜 Recent Sessions & Session Visual Gallery</h2>
+            <p class="text-xs text-slate-400">Inspect session details, view live asset previews, revert individual file changes, or undo whole sessions.</p>
+          </div>
+
+          <!-- Sorting Controls -->
+          <div class="flex items-center space-x-3">
+            <label class="text-xs text-slate-400 font-bold">Sort By:</label>
+            <select id="history-sort-select" onchange="loadHistoryData()" class="bg-obsidian border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-semibold">
+              <option value="recent">Recent (Newest First)</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name">Session Name (A-Z)</option>
+              <option value="file_count">Most Files</option>
+            </select>
+            <button onclick="loadHistoryData()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-white transition-all">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6" id="history-container">
+          <p class="text-slate-400 text-sm">Loading session records...</p>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 6: VISUAL ASSET GALLERY & INSPECTOR -->
+      <!-- ========================================== -->
+      <section id="screen-gallery" class="screen-view hidden space-y-6 max-w-6xl mx-auto pb-24">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-2xl font-bold text-white flex items-center space-x-2"><span>🖼️</span> <span>Visual Asset Gallery & Inspector</span></h2>
+            <p class="text-xs text-slate-400">Browse, inspect metadata, and compare visual assets processed across all sessions.</p>
+          </div>
+          <button onclick="loadGalleryAssets()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-white transition-all">🔄 Refresh Gallery</button>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="flex space-x-3 text-xs font-bold">
+          <button onclick="filterGallery('all')" id="gfilter-all" class="px-4 py-2 bg-lavenderFill text-lavenderDark rounded-xl">All Files</button>
+          <button onclick="filterGallery('image')" id="gfilter-image" class="px-4 py-2 bg-obsidian border border-slate-700 text-slate-300 rounded-xl hover:border-slate-500">Images 🖼️</button>
+          <button onclick="filterGallery('doc')" id="gfilter-doc" class="px-4 py-2 bg-obsidian border border-slate-700 text-slate-300 rounded-xl hover:border-slate-500">Documents 📄</button>
+          <button onclick="filterGallery('media')" id="gfilter-media" class="px-4 py-2 bg-obsidian border border-slate-700 text-slate-300 rounded-xl hover:border-slate-500">Audio / Video 🎵</button>
+        </div>
+
+        <!-- Asset Grid -->
+        <div id="gallery-asset-grid" class="grid grid-cols-4 gap-4">
+          <div class="p-8 text-center text-slate-500 text-xs col-span-4 bg-glass/60 rounded-2xl border border-slate-800">
+            No visual assets recorded yet. Run Module 1 or Module 2 to populate the gallery!
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 7: ACCOUNT PROFILE & DEVELOPER INFO -->
+      <!-- ========================================== -->
+      <section id="screen-account" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
+        <div>
+          <h2 class="text-2xl font-bold text-white flex items-center space-x-2"><span>👤</span> <span>User Account & Profile</span></h2>
+          <p class="text-xs text-slate-400">Manage user identity, avatar customization, session stats, and developer credits.</p>
+        </div>
+
+        <!-- USER IDENTITY & AVATAR CARD -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 flex items-center justify-between">
+          <div class="flex items-center space-x-5">
+            <div id="account-avatar-preview" class="w-16 h-16 rounded-full bg-slate-800 border-2 border-lavender flex items-center justify-center text-3xl shrink-0 overflow-hidden shadow-xl">
+              <span>🤖</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-extrabold text-white" id="account-display-name">deep</h3>
+              <p class="text-xs text-mint font-semibold font-mono" id="account-tier-badge">Standard Plan • Safe Protocol Active 🛡️</p>
+              <p class="text-xs text-slate-400 mt-1" id="account-session-summary">0 Sessions Completed</p>
+            </div>
+          </div>
+          <button onclick="openAvatarStudioModal()" class="px-5 py-2.5 bg-lavenderFill hover:bg-lavender text-lavenderDark font-bold text-xs rounded-xl shadow-md transition-all">🎨 Edit Profile & Avatar</button>
+        </div>
+
+        <!-- ENHANCED PRODUCTIVITY & USER TELEMETRY CARDS -->
+        <div class="grid grid-cols-4 gap-4">
+          <div class="bg-obsidian border border-slate-800 rounded-2xl p-5 text-center shadow-lg">
+            <span class="text-2xl font-black text-lavender block" id="stat-sessions-count">0 Session(s)</span>
+            <span class="text-xs font-bold text-slate-400">Total Sessions Executed</span>
+          </div>
+          <div class="bg-obsidian border border-slate-800 rounded-2xl p-5 text-center shadow-lg">
+            <span class="text-2xl font-black text-mint block" id="stat-launches-count">1 Launch</span>
+            <span class="text-xs font-bold text-slate-400">App Times Started</span>
+          </div>
+          <div class="bg-obsidian border border-slate-800 rounded-2xl p-5 text-center shadow-lg">
+            <span class="text-2xl font-black text-purple-400 block" id="stat-files-processed">0</span>
+            <span class="text-xs font-bold text-slate-400">Total Files Processed</span>
+          </div>
+          <div class="bg-obsidian border border-slate-800 rounded-2xl p-5 text-center shadow-lg">
+            <span class="text-2xl font-black text-emerald-400 block" id="stat-time-saved">~0.0 Hours</span>
+            <span class="text-xs font-bold text-slate-400">Manual Time Saved</span>
+          </div>
+        </div>
+
+        <!-- OVERTIME WORKSPACE ACTIVITY GRAPH CARD -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 space-y-4 shadow-xl">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center space-x-2"><span>📊</span> <span>Overtime Workspace Activity Graph</span></h3>
+              <p class="text-xs text-slate-400">Visual breakdown of items processed and organized over time.</p>
+            </div>
+            <span class="font-mono text-[10px] font-bold text-mint bg-emerald-950 border border-emerald-800 px-2.5 py-0.5 rounded-full">REALTIME TELEMETRY</span>
+          </div>
+          <div class="w-full h-44 bg-obsidian rounded-xl border border-slate-800 p-2 flex items-center justify-center">
+            <svg id="account-activity-svg-graph" class="w-full h-full" viewBox="0 0 560 170"></svg>
+          </div>
+        </div>
+
+        <!-- RECENT USER TASK BREAKDOWN TIMELINE -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 space-y-3 shadow-xl">
+          <h3 class="text-base font-bold text-white flex items-center space-x-2"><span>📜</span> <span>Recent User Task Activity Log</span></h3>
+          <p class="text-xs text-slate-400">Detailed record of your recent renaming, organization, and cleaning tasks.</p>
+          <div class="space-y-2 max-h-56 overflow-y-auto pr-1" id="account-task-timeline-container">
+            <p class="text-slate-500 text-xs text-center py-4">No task activity logged yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 9: SEMANTIC NATURAL LANGUAGE SEARCH -->
+      <!-- ========================================== -->
+      <!-- SCREEN 3: SEARCH -->
+      <!-- ========================================== -->
+      <section id="screen-search" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
+        <div>
+          <h2 class="text-2xl font-bold text-white flex items-center space-x-2">
+            <span>🔍</span> <span>Search</span>
+          </h2>
+          <p class="text-xs text-slate-400">Easily search your photos, documents, and files using simple everyday words or image concepts.</p>
+        </div>
+
+        <!-- ACTIVE WORKSPACE TARGET BANNER -->
+        <div class="bg-obsidian border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-lg">
+          <div class="flex items-center space-x-3 min-w-0">
+            <span class="text-xl shrink-0">📁</span>
+            <div class="min-w-0">
+              <span class="text-[10px] font-mono font-bold text-lavender uppercase block">CURRENT SEARCH FOLDER</span>
+              <p id="search-dir-label" class="text-xs font-mono text-white truncate">No folder selected. Click Browse Folder to pick your target.</p>
+            </div>
+          </div>
+          <button onclick="selectDirectoryForSearch()" class="px-4 py-2 bg-slate-900 border border-slate-700 hover:border-lavender text-white font-bold text-xs rounded-xl shrink-0 transition-all shadow-sm flex items-center space-x-1.5">
+            <span>📁</span> <span>Browse Folder</span>
+          </button>
+        </div>
+
+        <!-- SEARCH BAR & QUICK PRESET CHIPS -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 space-y-4 shadow-xl">
+          <div class="w-full">
+            <input type="text" id="semantic-search-input" oninput="debouncedSemanticSearch()" placeholder="Type words e.g. 'Sunset Beach View', 'July 2025 Invoice', 'App Code Screenshot'..." class="w-full bg-obsidian border border-slate-700 focus:border-lavender rounded-2xl px-5 py-3.5 text-sm text-white font-medium focus:outline-none shadow-inner">
+          </div>
+
+          <!-- DYNAMIC QUICK SEARCH SUGGESTION CHIPS FROM RECENT SESSIONS -->
+          <div class="flex items-center space-x-2 text-xs overflow-x-auto pb-1" id="search-suggestion-chips-container">
+            <span class="text-slate-400 font-bold shrink-0">Recent Suggestions:</span>
+            <span class="text-slate-500 italic text-[11px]">Loading recent session suggestions...</span>
+          </div>
+        </div>
+
+        <!-- SEARCH RESULTS CONTAINER -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+              <span>⚡</span> <span>Search Results</span>
+            </h3>
+            <span id="search-matches-count" class="font-mono text-xs text-slate-400 bg-slate-950 px-3 py-1 rounded-lg border border-slate-800">0 Matches Found</span>
+          </div>
+
+          <div id="search-results-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="col-span-full p-8 text-center text-slate-500 text-xs">
+              Enter a search query above to visually search across your active workspace directory.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 8: SYSTEM SETTINGS -->
+      <!-- ========================================== -->
+      <section id="screen-settings" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
+        <div>
+          <h2 class="text-2xl font-bold text-white flex items-center space-x-2"><span>⚙️</span> <span>System Settings & Model Preferences</span></h2>
+          <p class="text-xs text-slate-400">Configure AI model engine providers, sidebar behavior, software updates, and power user modes.</p>
+        </div>
+        
+        <!-- SIMPLIFIED VISION MODEL ENGINE SELECTION (UNLOCKED IN ADVANCE MODE) -->
+        <div id="vision-model-card" class="advance-mode-only hidden bg-glass/80 border border-glassBorder rounded-2xl p-6 space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold text-white flex items-center space-x-2"><span>🤖</span> <span>Vision Model Engine</span></h3>
+              <p class="text-xs text-slate-400">Default engine is Moondream 2 GGUF (100% offline & local).</p>
+            </div>
+            <button onclick="toggleCustomModelDrawer()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all border border-slate-700">➕ Add Custom Model / Server</button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- DEFAULT MODEL CARD -->
+            <div onclick="selectDefaultModelEngine()" id="model-card-default" class="p-5 bg-obsidian border-2 border-lavender rounded-2xl cursor-pointer transition-all flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <span class="text-2xl">🧠</span>
+                <div>
+                  <h4 class="font-bold text-white text-sm">Moondream 2 GGUF (Offline Default)</h4>
+                  <p class="text-xs text-slate-400 font-mono">100% Local Neural Engine • ./models/</p>
+                </div>
+              </div>
+              <span id="model-badge-default" class="px-3 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded-full text-xs font-mono font-bold">✓ ACTIVE DEFAULT</span>
+            </div>
+
+            <!-- CUSTOM MODEL CARD -->
+            <div onclick="toggleCustomModelDrawer()" id="model-card-custom" class="p-5 bg-obsidian border border-glassBorder hover:border-slate-600 rounded-2xl cursor-pointer transition-all flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <span class="text-2xl">🌐</span>
+                <div>
+                  <h4 class="font-bold text-white text-sm">Custom Server / Local GGUF</h4>
+                  <p class="text-xs text-slate-400 font-mono" id="custom-model-status-lbl">LM Studio / Ollama / Custom API</p>
+                </div>
+              </div>
+              <span id="model-badge-custom" class="px-3 py-1 bg-slate-900 text-slate-400 border border-slate-800 rounded-full text-xs font-mono font-bold">CONFIGURE</span>
+            </div>
+          </div>
+
+          <!-- INLINE CUSTOM MODEL DRAWER -->
+          <div id="custom-model-drawer" class="hidden p-5 bg-obsidian border border-slate-800 rounded-2xl space-y-4">
+            <h4 class="font-bold text-sm text-white flex items-center space-x-2"><span>🔌</span> <span>Suggested Model Server Presets</span></h4>
+            <div class="grid grid-cols-3 gap-3">
+              <button onclick="setSuggestedServerPreset('lm_studio', 'http://localhost:1234/v1')" class="p-3 bg-slate-900 border border-slate-700 hover:border-lavender rounded-xl text-left">
+                <p class="font-bold text-xs text-white">LM Studio Server</p>
+                <p class="font-mono text-[10px] text-slate-400">http://localhost:1234/v1</p>
+              </button>
+              <button onclick="setSuggestedServerPreset('ollama', 'http://localhost:11434')" class="p-3 bg-slate-900 border border-slate-700 hover:border-mint rounded-xl text-left">
+                <p class="font-bold text-xs text-white">Ollama Server</p>
+                <p class="font-mono text-[10px] text-slate-400">http://localhost:11434</p>
+              </button>
+              <button onclick="setSuggestedServerPreset('local_gguf', '')" class="p-3 bg-slate-900 border border-slate-700 hover:border-purple-400 rounded-xl text-left">
+                <p class="font-bold text-xs text-white">Custom GGUF File</p>
+                <p class="font-mono text-[10px] text-slate-400">Select file on disk</p>
+              </button>
+            </div>
+
+            <div class="flex items-center space-x-3 pt-2">
+              <input type="text" id="server-url-input" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono" value="http://localhost:1234/v1">
+              <button onclick="scanServerModels()" class="px-5 py-2.5 bg-mint text-obsidian font-bold text-xs rounded-xl shadow-md">🔍 Scan & Verify Model</button>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Scanned Vision Models:</label>
+              <select id="scanned-model-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                <option value="Auto / Default">Auto / Default</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADVANCED POWER USER MODE CARD (RED HIGHLIGHT) -->
+        <div class="bg-rose-950/40 border border-rose-800/80 rounded-2xl p-6 flex items-center justify-between shadow-xl">
+          <div class="space-y-1">
+            <h3 class="text-lg font-extrabold text-rose-200 flex items-center space-x-2">
+              <span>🔥</span> <span>Advanced Power User Mode</span>
+            </h3>
+            <p class="text-xs text-rose-300/80 max-w-xl">
+              Enable unrestricted high-speed batch execution, raw GGUF thread overrides, and direct neural model weight access. Intended for experienced power users.
+            </p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer shrink-0">
+            <input type="checkbox" id="advanced-mode-toggle" onchange="toggleAdvancedPowerUserMode(this.checked)" class="sr-only peer">
+            <div class="w-14 h-7 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-rose-600"></div>
+          </label>
+        </div>
+
+        <!-- SOFTWARE UPDATE CENTER CARD (RE-SCALED GRID FIX) -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold text-white flex items-center space-x-2"><span>🚀</span> <span>Software Update Center</span></h3>
+              <p class="text-xs text-slate-400 mt-0.5">Installed Version: <span class="font-mono text-mint font-bold">v2.5.0</span> • Channel: GitHub Release</p>
+            </div>
+            <button onclick="checkForUpdatesAction(true)" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all shadow-md">🔍 Check for Updates Now</button>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+            <label class="p-4 bg-obsidian border border-glassBorder rounded-xl flex items-center space-x-3 cursor-pointer">
+              <input type="radio" name="upd-mode-opt" id="upd-notify" value="notify" onchange="saveUpdatePref('notify')" class="accent-lavender">
+              <div>
+                <p class="text-xs font-bold text-white">Notify Only</p>
+                <p class="text-[10px] text-slate-400">Prompt before download</p>
+              </div>
+            </label>
+            <label class="p-4 bg-obsidian border border-glassBorder rounded-xl flex items-center space-x-3 cursor-pointer">
+              <input type="radio" name="upd-mode-opt" id="upd-auto_download" value="auto_download" checked onchange="saveUpdatePref('auto_download')" class="accent-lavender">
+              <div>
+                <p class="text-xs font-bold text-white">Auto Download</p>
+                <p class="text-[10px] text-slate-400">Download, prompt apply</p>
+              </div>
+            </label>
+            <label class="p-4 bg-obsidian border border-glassBorder rounded-xl flex items-center space-x-3 cursor-pointer">
+              <input type="radio" name="upd-mode-opt" id="upd-auto_update" value="auto_update" onchange="saveUpdatePref('auto_update')" class="accent-lavender">
+              <div>
+                <p class="text-xs font-bold text-white">Auto Update</p>
+                <p class="text-[10px] text-slate-400">Background restart</p>
+              </div>
+            </label>
+            <label class="p-4 bg-obsidian border border-glassBorder rounded-xl flex items-center space-x-3 cursor-pointer">
+              <input type="radio" name="upd-mode-opt" id="upd-disabled" value="disabled" onchange="saveUpdatePref('disabled')" class="accent-lavender">
+              <div>
+                <p class="text-xs font-bold text-white">Disabled</p>
+                <p class="text-[10px] text-slate-400">Manual checks only</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- RESET APP STATE CARD -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2"><span>🔄</span> <span>Reset Application State</span></h3>
+            <p class="text-xs text-slate-400 mt-1">Restore FlexBit AI to fresh installation state. Clears app caches, experience tier, and default paths.</p>
+          </div>
+          <button onclick="resetAccountProfile()" class="px-5 py-2.5 bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300 font-bold text-xs rounded-xl transition-all shadow-lg">Reset App State</button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 10: HELP CENTER & OFFICIAL USER GUIDE -->
+      <!-- ========================================== -->
+      <section id="screen-help" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-mono text-xs font-bold text-lavender uppercase tracking-wider">OFFICIAL USER GUIDE &amp; HELP CENTER</span>
+            <h2 class="text-3xl font-extrabold text-white mt-1 flex items-center space-x-2">
+              <span>📖</span> <span>FlexBit AI (v2.5.0) — Help Center & Documentation</span>
+            </h2>
+            <p class="text-sm text-slate-400">Welcome! FlexBit AI is an intelligent, 100% offline desktop workspace for renaming, organizing, and searching files.</p>
+          </div>
+          <button onclick="switchScreen('screen-home')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-all shadow-md">📂 Back to Library</button>
+        </div>
+
+        <!-- QUICK START CHECKLIST CARD -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 space-y-4 shadow-xl">
+          <h3 class="text-lg font-extrabold text-mint flex items-center space-x-2"><span>⚡</span> <span>Quick Start Checklist</span></h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 bg-obsidian border border-slate-800 rounded-xl space-y-1.5">
+              <span class="font-bold text-white text-sm flex items-center space-x-2"><span>1️⃣</span> <span>First Launch Setup</span></span>
+              <p class="text-slate-300 leading-relaxed">FlexBit AI automatically checks for the local vision model (Moondream 2). If missing, it downloads it directly into your local <code class="text-mint font-mono font-bold">./models/</code> folder.</p>
+            </div>
+            <div class="p-4 bg-obsidian border border-slate-800 rounded-xl space-y-1.5">
+              <span class="font-bold text-white text-sm flex items-center space-x-2"><span>2️⃣</span> <span>Select a Directory</span></span>
+              <p class="text-slate-300 leading-relaxed">Use the interactive dropzone on the Home Dashboard to drag &amp; drop any folder or browse your drive.</p>
+            </div>
+            <div class="p-4 bg-obsidian border border-slate-800 rounded-xl space-y-1.5">
+              <span class="font-bold text-white text-sm flex items-center space-x-2"><span>3️⃣</span> <span>Pick an Action</span></span>
+              <p class="text-slate-300 leading-relaxed">Choose whether you want to <strong>Rename Photos</strong>, <strong>Organize Files</strong>, or <strong>Clean Junk</strong>.</p>
+            </div>
+            <div class="p-4 bg-obsidian border border-slate-800 rounded-xl space-y-1.5">
+              <span class="font-bold text-white text-sm flex items-center space-x-2"><span>4️⃣</span> <span>Review Previews &amp; Undo</span></span>
+              <p class="text-slate-300 leading-relaxed">Inspect pre-execution preview tables, select specific files, and click Start. Revert any batch operation with 1 click anytime!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE GUIDES -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Module 1 -->
+          <div class="bg-obsidian border border-slate-800 rounded-2xl p-5 space-y-3 shadow-lg">
+            <div class="w-10 h-10 rounded-xl bg-purple-950/80 border border-purple-800 flex items-center justify-center text-xl">🖼️</div>
+            <h4 class="font-bold text-white text-base">Module 1: Vision AI Photo Renaming</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">Uses embedded Moondream 2 Vision Language Model (VLM) running locally on CPU/GPU to generate human-like titles.</p>
+            <div class="space-y-1 text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-800">
+              <p class="text-lavender font-bold">Personalities:</p>
+              <p>• Natural Sentence ("A golden retriever....jpg")</p>
+              <p>• Minimal Descriptors ("golden_retriever.png")</p>
+              <p>• Creative: Gamer 🎮, Movie 🍿, Music 🎵, Poetic 🌌</p>
+              <p class="text-mint font-bold pt-1">Transliteration:</p>
+              <p>English, Hinglish, Gujlish</p>
+            </div>
+          </div>
+
+          <!-- Module 2 -->
+          <div class="bg-obsidian border border-slate-800 rounded-2xl p-5 space-y-3 shadow-lg">
+            <div class="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-800 flex items-center justify-center text-xl">🗂️</div>
+            <h4 class="font-bold text-white text-base">Module 2: Smart File Organization</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">Sort cluttered directories containing thousands of mixed files into structured folders in seconds.</p>
+            <div class="space-y-1 text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-800">
+              <p class="text-cyan font-bold">Strategies:</p>
+              <p>• <strong>By Content</strong>: Images, Documents, Code, Archives, Executables, Audio, Video</p>
+              <p>• <strong>By Modifier</strong>: Year/Month hierarchy (2026/August/)</p>
+              <p>• <strong>Deep Nesting &amp; Extensions</strong>: Category/Year/Ext</p>
+            </div>
+          </div>
+
+          <!-- Module 3 -->
+          <div class="bg-obsidian border border-slate-800 rounded-2xl p-5 space-y-3 shadow-lg">
+            <div class="w-10 h-10 rounded-xl bg-emerald-950/80 border border-emerald-800 flex items-center justify-center text-xl">🧹</div>
+            <h4 class="font-bold text-white text-base">Module 3: Vision AI Junk Quarantine</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">Clean up digital clutter without risking important personal files.</p>
+            <div class="space-y-1 text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-800">
+              <p class="text-mint font-bold">Modes &amp; Safety:</p>
+              <p>• <strong>Light Clean</strong>: .tmp, .log, .dmp, installers, 0-byte items</p>
+              <p>• <strong>Deep AI Clean</strong>: Pitch-black photos, blurry shots, duplicate screenshots</p>
+              <p>• <strong>Safety Guarantee</strong>: Moved to <code class="text-mint font-mono">_Unnecessary_Files</code>. Never deleted!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEARCH & UNDO VAULT DETAILS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="bg-glass/80 border border-glassBorder rounded-2xl p-5 space-y-2">
+            <h4 class="font-bold text-white text-sm flex items-center space-x-2"><span>🔎</span> <span>Natural Language Semantic AI Search</span></h4>
+            <p class="text-xs text-slate-300 leading-relaxed">Find any file on your computer using natural language queries (e.g. <em>"Sunset at the beach"</em>, <em>"Tax Invoices 2026"</em>, <em>"Code Screenshot"</em>). Typing in the search bar streams real-time search results instantly across your target folder!</p>
+          </div>
+          <div class="bg-glass/80 border border-glassBorder rounded-2xl p-5 space-y-2">
+            <h4 class="font-bold text-white text-sm flex items-center space-x-2"><span>📜</span> <span>Session History &amp; 1-Click Undo Vault</span></h4>
+            <p class="text-xs text-slate-300 leading-relaxed">Every operation is logged persistently to <code class="text-mint font-mono">~/.flexbit_history.json</code>. Revert whole sessions or select individual files to restore to original names/locations with 1 click anytime.</p>
+          </div>
+        </div>
+
+        <!-- FREQUENTLY ASKED QUESTIONS (FAQ) -->
+        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 space-y-4 shadow-xl">
+          <h3 class="text-lg font-bold text-white flex items-center space-x-2"><span>❓</span> <span>Frequently Asked Questions (FAQ)</span></h3>
+          <div class="space-y-3 text-xs">
+            <div class="p-4 bg-obsidian border border-slate-800 rounded-xl space-y-1.5">
+              <h5 class="font-bold text-lavender text-sm">Q: Is my data uploaded to any cloud server?</h5>
+              <p class="text-slate-300 leading-relaxed">No. FlexBit AI operates 100% offline. All AI inference runs locally on your PC via llama.cpp/Moondream 2. Your files, images, and search history never leave your computer.</p>
+            </div>
+            <div class="p-4 bg-obsidian border border-slate-800 rounded-xl space-y-1.5">
+              <h5 class="font-bold text-lavender text-sm">Q: How do I move FlexBit AI to a USB drive?</h5>
+              <p class="text-slate-300 leading-relaxed">FlexBit AI is completely portable. Simply copy the FlexBit_AI folder (along with its local <code class="text-mint font-mono">./models/</code> directory) to any external drive. Plug it into any Windows PC and double-click <code class="text-mint font-mono">FlexBit_AI.exe</code> to run instantly.</p>
+            </div>
+            <div class="p-4 bg-obsidian border border-slate-800 rounded-xl space-y-1.5">
+              <h5 class="font-bold text-lavender text-sm">Q: What should I do if a batch rename made a mistake?</h5>
+              <p class="text-slate-300 leading-relaxed">Don't worry! Click <strong>Recent Sessions</strong> in the left sidebar, locate the session, and click <strong>Revert Session</strong>. All modified files will instantly return to their original names and locations.</p>
+            </div>
+            <div class="p-4 bg-obsidian border border-slate-800 rounded-xl space-y-1.5">
+              <h5 class="font-bold text-lavender text-sm">Q: Can I use an external AI server instead of local CPU processing?</h5>
+              <p class="text-slate-300 leading-relaxed">Yes! In the system settings menu, you can connect FlexBit AI to a local LM Studio or Ollama server instance by providing your local endpoint (<code class="text-mint font-mono">http://localhost:1234/v1</code>).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- COMMUNITY & FEEDBACK -->
+        <div class="bg-gradient-to-r from-slate-900 via-obsidian to-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-xl">
+          <div class="space-y-1">
+            <h4 class="font-bold text-white text-sm flex items-center space-x-2"><span>💬</span> <span>Community &amp; Feedback</span></h4>
+            <p class="text-xs text-slate-400">Open Source under GNU General Public License v3 (GPL-3.0) • Designed &amp; Engineered with care by Deep Dineshbhai Kotval (@deepxcoder).</p>
+          </div>
+          <div class="flex space-x-3 shrink-0">
+            <a href="https://github.com/deepxcoder/flexbit-ai" target="_blank" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all border border-slate-700 flex items-center space-x-1.5">
+              <span>🐙</span> <span>GitHub Repository</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- ABOUT DEVELOPER HERO BADGE COMPONENT -->
+        <div class="relative flex min-h-[180px] w-full items-center justify-center overflow-hidden bg-[#080A10] p-6 rounded-3xl border border-white/10 shadow-2xl">
+          <!-- Pixelated grid overlay pattern -->
+          <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+
+          <!-- Ambient purple glow -->
+          <div class="absolute h-32 w-32 rounded-full bg-purple-600/20 blur-3xl"></div>
+
+          <!-- Printed Credit Badge -->
+          <div class="relative z-10 flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-900/80 px-6 py-4 shadow-2xl backdrop-blur-xl transition-transform hover:scale-105">
+            
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 font-mono font-bold text-lg border border-purple-500/20">
+              &lt;/&gt;
+            </div>
+
+            <div class="flex flex-col">
+              <span class="font-mono text-[10px] font-medium tracking-wider text-purple-400 uppercase">
+                DESIGNED &amp; ENGINEERED BY
+              </span>
+              <span class="text-[15px] font-bold text-slate-100 tracking-wide">
+                Deep Dineshbhai Kotval <span class="text-xs font-normal text-slate-400">(@deepxcoder)</span>
+              </span>
+              <span class="font-mono text-[11px] text-slate-500">
+                FlexBit AI • Powered by Local Vision
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2 ml-4">
+              <a href="https://github.com/deepxcoder" target="_blank" class="p-2 bg-slate-800/80 hover:bg-purple-600/30 border border-white/10 rounded-xl text-xs font-bold text-slate-200 transition-all" title="GitHub">🌐</a>
+              <a href="https://www.linkedin.com/in/deep-kotval-83b42924b/" target="_blank" class="p-2 bg-slate-800/80 hover:bg-purple-600/30 border border-white/10 rounded-xl text-xs font-bold text-slate-200 transition-all" title="LinkedIn">💼</a>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FILE ANALYSIS PREVIEW & SELECTION MODAL -->
+  <div id="file-analysis-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-obsidian border border-glassBorder rounded-3xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-6 bg-slate-900/60 border-b border-glassBorder flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-2xl bg-lavender/20 border border-lavender/40 flex items-center justify-center text-xl">🔍</div>
+          <div>
+            <h3 id="analysis-modal-title" class="text-lg font-bold text-white">File Analysis & Pre-Execution Preview</h3>
+            <p id="analysis-modal-subtitle" class="text-xs text-slate-400 font-mono">Review scanned assets and select items to process</p>
+          </div>
+        </div>
+        <button onclick="closeAnalysisModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition-all">✕</button>
+      </div>
+
+      <!-- Controls & Master Selection Toolbar -->
+      <div class="px-6 py-3 bg-slate-950/60 border-b border-slate-800/80 flex items-center justify-between text-xs shrink-0">
+        <div class="flex items-center space-x-3">
+          <label class="flex items-center space-x-2 cursor-pointer font-bold text-slate-200 hover:text-white">
+            <input type="checkbox" id="analysis-select-all-cb" onchange="toggleAnalysisSelectAll(this.checked)" checked class="accent-lavender w-4 h-4 rounded cursor-pointer">
+            <span>Select All Files</span>
+          </label>
+          <span class="text-slate-600">|</span>
+          <span id="analysis-selected-count-badge" class="font-mono font-bold text-mint bg-emerald-950/80 border border-emerald-800/80 px-2.5 py-0.5 rounded-full">0 / 0 Selected</span>
+        </div>
+        <div class="text-slate-400 font-mono text-[11px]" id="analysis-estimated-time-lbl">
+          Expected Duration: 0s
+        </div>
+      </div>
+
+      <!-- Scrollable File List Container -->
+      <div id="analysis-file-list-container" class="flex-1 overflow-y-auto p-6 space-y-2.5 max-h-[50vh]">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-5 bg-slate-900/60 border-t border-glassBorder flex items-center justify-between shrink-0">
+        <button onclick="closeAnalysisModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all">Cancel</button>
+        <button id="analysis-confirm-btn" onclick="executeConfirmedAnalysisAction()" class="px-6 py-2.5 bg-gradient-to-r from-lavender to-cyan hover:from-purple-500 hover:to-cyan-400 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-lavender/30 transition-all flex items-center space-x-2">
+          <span>🚀</span>
+          <span id="analysis-confirm-btn-text">Continue Operation (0 Files)</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC CONTROLLER -->
+  <script>
+    let activeDirectory = "";
+    let activeOrgDirectory = "";
+    let selectedPersonality = "natural";
+    let selectedEmoji = "leading";
+    let selectedPattern = "vibrant";
+    let selectedOrgStrategyType = "content";
+
+    let currentSidebarMode = "dynamic"; // "dynamic", "expanded", "compact"
+    let currentScreenId = "screen-home";
+    let activeTaskScreenId = null;
+
+    function setSidebarMode(mode) {
+      currentSidebarMode = mode;
+      const sb = document.getElementById('main-sidebar');
+      if (sb) {
+        sb.className = `sidebar-${mode} bg-glass/80 backdrop-blur-xl border-r border-glassBorder flex flex-col justify-between p-4 z-20 shrink-0 select-none overflow-hidden`;
+      }
+      ['dynamic', 'expanded', 'compact'].forEach(m => {
+        const opt = document.getElementById('sbm-' + m);
+        if (opt) opt.checked = (m === mode);
+      });
+      if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.save_config({ sidebar_mode: mode });
+      }
+    }
+
+    function cycleSidebarMode() {
+      const modes = ['dynamic', 'expanded', 'compact'];
+      const nextIdx = (modes.indexOf(currentSidebarMode) + 1) % modes.length;
+      setSidebarMode(modes[nextIdx]);
+    }
+
+    async function openInExplorer(targetPath) {
+      if (!targetPath) return;
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.open_in_explorer(targetPath);
+        if (res && res.status === 'error') {
+          alert(res.message);
+        }
+      }
+    }
+
+    function showTaskDoneToast(directory, fileCount) {
+      // Remove any existing done toast
+      const old = document.getElementById('task-done-toast');
+      if (old) old.remove();
+
+      const toast = document.createElement('div');
+      toast.id = 'task-done-toast';
+      toast.style.cssText = 'position:fixed;bottom:28px;right:28px;z-index:9999;max-width:340px;width:100%;';
+      toast.innerHTML = `
+        <div style="background:linear-gradient(135deg,#1e1b2e,#12101d);border:1.5px solid #a855f7;border-radius:20px;padding:18px 20px;box-shadow:0 8px 40px rgba(139,92,246,0.35);display:flex;flex-direction:column;gap:12px;animation:slideUpToast 0.4s cubic-bezier(0.34,1.56,0.64,1) both;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">✅</div>
+            <div style="flex:1;min-width:0;">
+              <p style="color:#fff;font-weight:800;font-size:13px;margin:0 0 2px;">All done! Great work 🎉</p>
+              <p style="color:#94a3b8;font-size:11px;margin:0;">${fileCount > 0 ? `${fileCount} file${fileCount > 1 ? 's' : ''} processed` : 'Task completed'} — your files are ready.</p>
+            </div>
+            <button onclick="document.getElementById('task-done-toast').remove()" style="background:none;border:none;color:#64748b;font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;" title="Dismiss">✕</button>
+          </div>
+          ${directory ? `
+          <div style="display:flex;gap:8px;">
+            <button onclick="openInExplorer('${directory.replace(/\\/g, '\\\\')}');document.getElementById('task-done-toast').remove();" style="flex:1;padding:9px 14px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:12px;color:#fff;font-weight:800;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+              <span>📁</span> <span>Open in Explorer</span>
+            </button>
+            <button onclick="switchScreen('screen-history');document.getElementById('task-done-toast').remove();" style="padding:9px 14px;background:#1e293b;border:1.5px solid #334155;border-radius:12px;color:#cbd5e1;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">View History</button>
+          </div>` : ''}
+        </div>
+      `;
+
+      // Inject animation keyframe once
+      if (!document.getElementById('toast-keyframes')) {
+        const style = document.createElement('style');
+        style.id = 'toast-keyframes';
+        style.textContent = `@keyframes slideUpToast{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}`;
+        document.head.appendChild(style);
+      }
+
+      document.body.appendChild(toast);
+
+      // Auto-dismiss after 8 seconds
+      setTimeout(() => { if (document.getElementById('task-done-toast')) document.getElementById('task-done-toast').remove(); }, 8000);
+    }
+
+
+
+    function openWelcomeWizard() {
+      document.getElementById('welcome-wizard-modal').classList.remove('hidden');
+    }
+
+    function closeWelcomeWizard() {
+      document.getElementById('welcome-wizard-modal').classList.add('hidden');
+    }
+
+    async function finishOnboardingWizard() {
+      const uName = document.getElementById('wiz-username').value.trim() || "deep";
+      const uTier = document.getElementById('wiz-usertier').value;
+      const mProv = document.getElementById('wiz-provider').value;
+
+      document.getElementById('sidebar-username').innerText = uName;
+      document.getElementById('sidebar-usertier').innerText = uTier;
+
+      if (window.pywebview && window.pywebview.api) {
+        await window.pywebview.api.save_config({
+          user_name: uName,
+          user_tier: uTier,
+          model_provider: mProv,
+          first_run_completed: true
+        });
+      }
+      closeWelcomeWizard();
+      alert("Welcome to FlexBit AI! Profile setup complete.");
+    }
+
+    async function checkFirstRunOnboarding() {
+      if (window.pywebview && window.pywebview.api) {
+        try {
+          const cfg = await window.pywebview.api.get_config();
+          if (cfg) {
+            if (cfg.sidebar_mode) setSidebarMode(cfg.sidebar_mode);
+            if (cfg.user_name) {
+              document.getElementById('sidebar-username').innerText = cfg.user_name;
+              if (document.getElementById('acc-username-input')) document.getElementById('acc-username-input').value = cfg.user_name;
+            }
+            if (cfg.user_tier) {
+              document.getElementById('sidebar-usertier').innerText = cfg.user_tier;
+              if (document.getElementById('acc-tier-select')) document.getElementById('acc-tier-select').value = cfg.user_tier;
+            }
+            if (!cfg.first_run_completed) {
+              openWelcomeWizard();
+            }
+          }
+        } catch (e) {
+          console.error("Config check error:", e);
+        }
+      }
+    }
+
+    // GLOBAL PROGRESS LISTENER FOR MULTI-PHASE BACKEND TASK TELEMETRY
+    window.onBatchProgress = function(data) {
+      console.log("Progress telemetry:", data);
+      const cur = data.current_idx || 0;
+      const tot = data.total_count || 0;
+      const pct = Math.round(data.percentage || 0);
+
+      const counterText = tot > 0 ? `${cur} of ${tot} files (${pct}%)` : `${pct}%`;
+      const coolTelemetryStr = tot > 0 ? `⚡ [ ${cur} / ${tot} Assets ] • ${pct}% Completed` : `⚡ ${pct}% Completed`;
+
+      // Update Task Manager Modal
+      document.getElementById('task-modal-phase').innerText = (data.phase || "PROCESSING").toUpperCase();
+      document.getElementById('task-modal-pct').innerText = coolTelemetryStr;
+      document.getElementById('task-modal-fill').style.width = `${pct}%`;
+      document.getElementById('task-modal-file').innerText = data.file_name ? `${data.file_name} ${data.new_name ? '➔ ' + data.new_name : ''}` : (data.details || '');
+
+      // Module In-Situ Telemetry Banner (Module 1 Renamer)
+      const modExecBanner = document.getElementById('mod-prog-banner-exec');
+      if (modExecBanner) {
+        document.getElementById('mod-prog-phase-exec').innerText = (data.phase || "PROCESSING").toUpperCase();
+        document.getElementById('mod-prog-badge-exec').innerText = coolTelemetryStr;
+        document.getElementById('mod-prog-fill-exec').style.width = `${pct}%`;
+        document.getElementById('mod-prog-file-exec').innerText = data.file_name ? `${data.file_name} ${data.new_name ? '➔ ' + data.new_name : ''}` : (data.details || counterText);
+        if (pct > 0 && pct < 100) modExecBanner.classList.remove('hidden');
+        else if (pct >= 100) setTimeout(() => modExecBanner.classList.add('hidden'), 3500);
+      }
+
+      // Module In-Situ Telemetry Banner (Module 2 Org)
+      const modOrgBanner = document.getElementById('mod-prog-banner-org');
+      if (modOrgBanner) {
+        document.getElementById('mod-prog-phase-org').innerText = (data.phase || "PROCESSING").toUpperCase();
+        document.getElementById('mod-prog-badge-org').innerText = coolTelemetryStr;
+        document.getElementById('mod-prog-fill-org').style.width = `${pct}%`;
+        document.getElementById('mod-prog-file-org').innerText = data.file_name ? `${data.file_name} ${data.new_name ? '➔ ' + data.new_name : ''}` : (data.details || counterText);
+        if (pct > 0 && pct < 100) modOrgBanner.classList.remove('hidden');
+        else if (pct >= 100) setTimeout(() => modOrgBanner.classList.add('hidden'), 3500);
+      }
+
+      // Sidebar Progress Card
+      const sidebarCard = document.getElementById('sidebar-progress-card');
+      document.getElementById('sidebar-progress-phase').innerText = (data.phase || "PROCESSING").toUpperCase();
+      document.getElementById('sidebar-progress-pct').innerText = `${cur}/${tot}`;
+      document.getElementById('sidebar-progress-fill').style.width = `${pct}%`;
+      document.getElementById('sidebar-progress-file').innerText = data.file_name ? `${data.file_name} ➔ ${data.new_name}` : counterText;
+
+      // Header Bar Progress (Shown ONLY when navigating away from active task screen)
+      const headerCard = document.getElementById('header-progress-container');
+      document.getElementById('header-progress-phase').innerText = coolTelemetryStr;
+      document.getElementById('header-progress-pct').innerText = `${pct}%`;
+      document.getElementById('header-progress-fill').style.width = `${pct}%`;
+      document.getElementById('header-progress-file').innerText = data.file_name ? `${data.file_name}` : counterText;
+
+      if (pct > 0 && pct < 100) {
+        sidebarCard.classList.remove('hidden');
+        if (currentScreenId !== activeTaskScreenId) {
+          headerCard.classList.remove('hidden');
+        } else {
+          headerCard.classList.add('hidden');
+        }
+      }
+
+      if (pct >= 100 || data.phase === 'Completion Phase' || data.phase === 'Cancelled Phase') {
+        const wasCancelled = data.phase === 'Cancelled Phase';
+        const completedDir = activeDirectory || activeOrgDirectory || '';
+
+        if (activeTaskScreenId === 'screen-execution') {
+          const uBanner = document.getElementById('undo-banner-exec');
+          if (uBanner) uBanner.classList.remove('hidden');
+        } else if (activeTaskScreenId === 'screen-file-org') {
+          const uBanner = document.getElementById('undo-banner-org');
+          if (uBanner) uBanner.classList.remove('hidden');
+        } else if (activeTaskScreenId === 'screen-junk') {
+          const uBanner = document.getElementById('undo-banner-junk');
+          if (uBanner) uBanner.classList.remove('hidden');
+        }
+
+        sidebarCard.classList.add('hidden');
+        headerCard.classList.add('hidden');
+        closeTaskControlModal();
+        activeTaskScreenId = null;
+
+        if (document.getElementById('screen-history') && !document.getElementById('screen-history').classList.contains('hidden')) {
+          loadHistoryData();
+        }
+
+        // Show floating task-done toast with Open in Explorer
+        if (!wasCancelled) {
+          showTaskDoneToast(completedDir, data.total_count || 0);
+        }
+      }
+    };
+
+    async function undoLatestSession(moduleTag) {
+      if (window.pywebview && window.pywebview.api) {
+        const history = await window.pywebview.api.get_history('recent');
+        if (history && history.length > 0) {
+          const latestSess = history[0];
+          const res = await window.pywebview.api.revert_session(latestSess.session_id);
+          alert(res.message);
+          const banner = document.getElementById('undo-banner-' + moduleTag);
+          if (banner) banner.classList.add('hidden');
+          loadHistoryData();
+        } else {
+          alert("No recent action available to revert.");
+        }
+      }
+    }
+
+    function selectDefaultModelEngine() {
+      const cardDef = document.getElementById('model-card-default');
+      const cardCust = document.getElementById('model-card-custom');
+      const drawer = document.getElementById('custom-model-drawer');
+      if (cardDef) cardDef.className = "p-5 bg-obsidian border-2 border-lavender rounded-2xl cursor-pointer transition-all flex items-center justify-between";
+      if (cardCust) cardCust.className = "p-5 bg-obsidian border border-glassBorder hover:border-slate-600 rounded-2xl cursor-pointer transition-all flex items-center justify-between";
+      if (drawer) drawer.classList.add('hidden');
+
+      if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.save_config({ vision_provider: "embedded" });
+      }
+      alert("Vision model reset to Default Offline Moondream 2 GGUF.");
+    }
+
+    function toggleCustomModelDrawer() {
+      const drawer = document.getElementById('custom-model-drawer');
+      const cardDef = document.getElementById('model-card-default');
+      const cardCust = document.getElementById('model-card-custom');
+
+      if (drawer) {
+        drawer.classList.toggle('hidden');
+        const isOpened = !drawer.classList.contains('hidden');
+        if (isOpened) {
+          if (cardCust) cardCust.className = "p-5 bg-obsidian border-2 border-mint rounded-2xl cursor-pointer transition-all flex items-center justify-between";
+          if (cardDef) cardDef.className = "p-5 bg-obsidian border border-glassBorder rounded-2xl cursor-pointer transition-all flex items-center justify-between";
+        }
+      }
+    }
+
+    function setSuggestedServerPreset(prov, defaultUrl) {
+      const input = document.getElementById('server-url-input');
+      if (input && defaultUrl) input.value = defaultUrl;
+      if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.save_config({ vision_provider: prov, server_url: defaultUrl });
+      }
+      if (prov === 'local_gguf') {
+        alert("Custom GGUF file mode selected. You can select model weights directly on launch.");
+      } else {
+        alert(`Model server preset set to ${prov.toUpperCase()} (${defaultUrl}). Click 'Scan & Verify Model' to connect.`);
+      }
+    }
+
+    function jumpToActiveTaskScreen() {
+      if (activeTaskScreenId) {
+        switchScreen(activeTaskScreenId);
+      } else {
+        openTaskControlModal();
+      }
+    }
+
+    function openTaskControlModal() {
+      document.getElementById('task-control-modal').classList.remove('hidden');
+    }
+
+    function closeTaskControlModal() {
+      document.getElementById('task-control-modal').classList.add('hidden');
+    }
+
+    async function cancelActiveBatchTask() {
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.cancel_active_task();
+        alert(res.message || "Task cancellation requested.");
+        closeTaskControlModal();
+      }
+    }
+
+    function switchScreen(screenId) {
+      currentScreenId = screenId;
+      document.querySelectorAll('.screen-view').forEach(el => el.classList.add('hidden'));
+      document.getElementById(screenId).classList.remove('hidden');
+
+      ['home', 'history', 'settings'].forEach(navKey => {
+        const btn = document.getElementById('nav-' + navKey);
+        if (btn) {
+          if ('screen-' + navKey === screenId) {
+            btn.className = "w-full flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 bg-slate-800/80 text-white border border-slate-700/50";
+          } else {
+            btn.className = "w-full flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800/40";
+          }
+        }
+      });
+
+      if (screenId === 'screen-history') loadHistoryData();
+      if (screenId === 'screen-account') updateAccountScreenMetrics();
+      if (screenId === 'screen-search') renderSearchSuggestionsFromRecentSessions();
+
+      // Update Header Progress Bar visibility on screen change
+      const headerCard = document.getElementById('header-progress-container');
+      if (activeTaskScreenId && currentScreenId !== activeTaskScreenId) {
+        headerCard.classList.remove('hidden');
+      } else {
+        headerCard.classList.add('hidden');
+      }
+
+      if (screenId === 'screen-history') loadHistoryData();
+      if (screenId === 'screen-file-org') {
+        if (!activeOrgDirectory && activeDirectory) activeOrgDirectory = activeDirectory;
+        if (activeOrgDirectory) loadOrgDirectoryTree(activeOrgDirectory);
+      }
+    }
+
+    function toggleNotifications() {
+      document.getElementById('notification-drawer').classList.toggle('hidden');
+    }
+
+    function openAccountModal() {
+      document.getElementById('account-modal').classList.remove('hidden');
+    }
+
+    function closeAccountModal() {
+      document.getElementById('account-modal').classList.add('hidden');
+    }
+
+    function saveAccountProfile() {
+      const uName = document.getElementById('acc-username-input').value;
+      const uTier = document.getElementById('acc-tier-select').value;
+      document.getElementById('sidebar-username').innerText = uName;
+      document.getElementById('sidebar-usertier').innerText = uTier;
+      if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.save_config({ user_name: uName, user_tier: uTier });
+      }
+      closeAccountModal();
+      alert("Account profile saved!");
+    }
+
+    async function resetAccountProfile() {
+      if (confirm("Are you sure you want to reset your account profile? This will restore fresh installation defaults and re-open the setup wizard.")) {
+        if (window.pywebview && window.pywebview.api) {
+          const res = await window.pywebview.api.reset_account();
+          alert(res.message || "Account profile reset!");
+        }
+        document.getElementById('sidebar-username').innerText = "Explorer";
+        document.getElementById('sidebar-usertier').innerText = "Free Plan";
+        openWelcomeWizard();
+      }
+    }
+
+    function onProviderChange(prov) {
+      const panel = document.getElementById('server-config-panel');
+      if (prov === 'lm_studio' || prov === 'ollama') {
+        panel.classList.remove('hidden');
+        document.getElementById('server-url-input').value = prov === 'lm_studio' ? 'http://localhost:1234/v1' : 'http://localhost:11434';
+      } else {
+        panel.classList.add('hidden');
+      }
+      updateLivePreview();
+    }
+
+    async function scanServerModels() {
+      const prov = document.querySelector('input[name="model-prov"]:checked').value;
+      const url = document.getElementById('server-url-input').value;
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.scan_models(prov, url);
+        if (res.models && res.models.length > 0) {
+          const select = document.getElementById('scanned-model-select');
+          select.innerHTML = res.models.map(m => `<option value="${m}">${m}</option>`).join('');
+          alert(`Scanned ${res.models.length} model(s) on server!`);
+        } else {
+          alert("Could not scan models on server. Make sure LM Studio/Ollama is running.");
+        }
+      }
+    }
+
+    async function saveSettingsFromUI() {
+      const prov = document.querySelector('input[name="model-prov"]:checked').value;
+      const url = document.getElementById('server-url-input').value;
+      const model = document.getElementById('scanned-model-select').value;
+      if (window.pywebview && window.pywebview.api) {
+        await window.pywebview.api.save_config({ model_provider: prov, server_url: url, selected_model: model });
+        alert("Settings saved!");
+        updateLivePreview();
+      }
+    }
+
+    async function selectDirectory() {
+      let path = "";
+      if (window.pywebview && window.pywebview.api) {
+        path = await window.pywebview.api.select_directory();
+      }
+      if (!path) {
+        path = prompt("Enter or paste full folder path to your media directory:", activeDirectory || "C:\\Users");
+      }
+      if (path && path.trim()) {
+        activeDirectory = path.trim();
+        const execLbl = document.getElementById('execution-dir-label');
+        if (execLbl) execLbl.innerText = activeDirectory;
+        const searchLbl = document.getElementById('search-dir-label');
+        if (searchLbl) searchLbl.innerText = activeDirectory;
+        addDynamicNotification("Workspace Folder Selected", `Active directory set to: ${activeDirectory}`, "info");
+        updateLivePreview();
+      }
+    }
+
+    function selectPersonality(p) {
+      selectedPersonality = p;
+      ['natural', 'efficiency', 'creative'].forEach(key => {
+        const card = document.getElementById('pcard-' + key);
+        if (card) {
+          if (key === p) {
+            card.className = "p-4 bg-obsidian border-2 border-lavender rounded-xl cursor-pointer transition-all shadow-lg";
+          } else {
+            card.className = "p-4 bg-obsidian border border-glassBorder rounded-xl cursor-pointer transition-all hover:border-slate-600";
+          }
+        }
+      });
+      updatePreviewChip();
+    }
+
+    function selectPattern(pat) {
+      selectedPattern = pat;
+      ['timestamps', 'org', 'vibrant', 'emoji_name', 'minimalist'].forEach(key => {
+        const card = document.getElementById('pat-' + key);
+        if (card) {
+          if (key === pat) {
+            card.className = "p-4 bg-obsidian border-2 border-lavender rounded-xl cursor-pointer transition-all shadow-lg";
+          } else {
+            card.className = "p-4 bg-obsidian border border-glassBorder rounded-xl cursor-pointer transition-all hover:border-slate-600";
+          }
+        }
+      });
+      updatePreviewChip();
+    }
+
+    function updatePreviewChip() {
+      const chip = document.getElementById('output-chip-lbl');
+      if (!chip) return;
+      
+      const langScript = document.querySelector('input[name="lang-script"]:checked') ? document.querySelector('input[name="lang-script"]:checked').value : 'English';
+
+      let prefix = "";
+      if (selectedEmoji === 'leading' || selectedPattern === 'vibrant' || selectedPattern === 'emoji_name') {
+        prefix = "📸_";
+      }
+
+      let dateStr = "2026-08-01_001_";
+      let baseText = "Golden_Retriever_Wheat_Field";
+
+      if (langScript === 'Hinglish') baseText = "Khet_Mein_Kutta_Sunlit";
+      if (langScript === 'Gujlish') baseText = "Khetar_Ma_Kutro_Sunset";
+
+      if (selectedPersonality === 'efficiency') {
+        baseText = "golden_retriever_wheat_field";
+      } else if (selectedPersonality === 'natural') {
+        baseText = "Golden_Retriever_In_Wheat_Field_At_Sunset";
+      }
+
+      if (selectedPattern === 'timestamps') {
+        chip.innerText = `${dateStr}${baseText}.jpg`;
+      } else if (selectedPattern === 'vibrant') {
+        chip.innerText = `📸_${dateStr}${baseText}.jpg`;
+      } else if (selectedPattern === 'minimalist') {
+        chip.innerText = `${baseText}.jpg`;
+      } else {
+        chip.innerText = `${prefix}${baseText}.jpg`;
+      }
+
+      updateLivePreview();
+    }
+
+    async function resolveLastSessionDirectory() {
+      if (window.pywebview && window.pywebview.api) {
+        try {
+          const history = await window.pywebview.api.get_history('recent');
+          if (history && history.length > 0 && history[0].operations && history[0].operations.length > 0) {
+            const lastOp = history[0].operations[0];
+            const p = lastOp.original_path || lastOp.new_path;
+            if (p) {
+              const lastDir = p.substring(0, Math.max(p.lastIndexOf('\\'), p.lastIndexOf('/')));
+              if (lastDir) {
+                if (!activeDirectory) activeDirectory = lastDir;
+                if (!activeOrgDirectory) activeOrgDirectory = lastDir;
+                const searchLbl = document.getElementById('search-dir-label');
+                if (searchLbl) searchLbl.innerText = activeDirectory;
+                const execLbl = document.getElementById('execution-dir-label');
+                if (execLbl) execLbl.innerText = activeDirectory;
+                const junkLbl = document.getElementById('junk-dir-label');
+                if (junkLbl) junkLbl.innerText = activeDirectory;
+              }
+            }
+          }
+        } catch (e) {
+          console.log("Could not resolve last session directory:", e);
+        }
+      }
+    }
+
+    async function renderSearchSuggestionsFromRecentSessions() {
+      const container = document.getElementById('search-suggestion-chips-container');
+      if (!container) return;
+
+      let suggestionPhrases = [];
+
+      if (window.pywebview && window.pywebview.api) {
+        try {
+          const history = await window.pywebview.api.get_history('recent');
+          if (history && history.length > 0) {
+            history.forEach(sess => {
+              if (sess.operations && sess.operations.length > 0) {
+                sess.operations.forEach(op => {
+                  if (op.new_name) {
+                    let clean = op.new_name.replace(/\.[^/.]+$/, "")
+                                          .replace(/^[\d\s_\-🖼️🎮🍿🎵🌌✨]+/, "")
+                                          .replace(/_/g, " ")
+                                          .trim();
+                    if (clean && clean.length > 2 && !suggestionPhrases.includes(clean)) {
+                      suggestionPhrases.push(clean);
+                    }
+                  }
+                });
+              }
+              if (sess.session_name && !suggestionPhrases.includes(sess.session_name)) {
+                suggestionPhrases.push(sess.session_name);
+              }
+            });
+          }
+        } catch (e) {
+          console.log("Error loading recent session suggestions:", e);
+        }
+      }
+
+      if (suggestionPhrases.length === 0) {
+        suggestionPhrases = ["Cyber Sunset", "Solar Meadow", "Radiant Blossom", "Yellow Starlight"];
+      }
+
+      const topPhrases = suggestionPhrases.slice(0, 5);
+
+      let html = '<span class="text-slate-400 font-bold shrink-0">Recent Suggestions:</span>';
+      topPhrases.forEach(phrase => {
+        const safePhrase = phrase.replace(/'/g, "\\'");
+        html += `<button onclick="applySearchPreset('${safePhrase}')" class="px-3 py-1 bg-slate-900 border border-slate-800 hover:border-lavender rounded-lg text-slate-200 font-medium text-xs truncate max-w-[200px] transition-all">✨ ${phrase}</button>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    let searchDebounceTimer = null;
+    function debouncedSemanticSearch() {
+      if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        const query = document.getElementById('semantic-search-input').value.trim();
+        if (query.length > 0) {
+          executeSemanticSearch(true);
+        } else {
+          const container = document.getElementById('search-results-grid');
+          if (container) {
+            container.innerHTML = '<div class="col-span-full p-8 text-center text-slate-500 text-xs">Enter a search query above to visually search across your active workspace directory.</div>';
+          }
+          const countLbl = document.getElementById('search-matches-count');
+          if (countLbl) countLbl.innerText = '0 Matches Found';
+        }
+      }, 250);
+    }
+
+    async function executeSemanticSearch(isAutoSearch = false) {
+      const input = document.getElementById('semantic-search-input');
+      const container = document.getElementById('search-results-grid');
+      const countLbl = document.getElementById('search-matches-count');
+      const searchLbl = document.getElementById('search-dir-label');
+      if (!input || !container) return;
+
+      if (!activeDirectory) {
+        if (window.pywebview && window.pywebview.api) {
+          try {
+            const history = await window.pywebview.api.get_history('recent');
+            if (history && history.length > 0 && history[0].operations && history[0].operations.length > 0) {
+              const lastOp = history[0].operations[0];
+              const p = lastOp.original_path || lastOp.new_path;
+              if (p) {
+                activeDirectory = p.substring(0, Math.max(p.lastIndexOf('\\'), p.lastIndexOf('/')));
+              }
+            }
+          } catch (e) {
+            console.log("Could not resolve last session directory:", e);
+          }
+        }
+        if (!activeDirectory && activeOrgDirectory) {
+          activeDirectory = activeOrgDirectory;
+        } else if (!activeDirectory) {
+          if (!isAutoSearch) {
+            await selectDirectory();
+            if (!activeDirectory) return;
+          } else {
+            activeDirectory = ".";
+          }
+        }
+      }
+
+      if (searchLbl && activeDirectory) searchLbl.innerText = activeDirectory;
+
+      const query = input.value.trim();
+      if (!query) {
+        if (!isAutoSearch) alert("Please enter a search query.");
+        return;
+      }
+
+      container.innerHTML = '<div class="col-span-full p-8 text-center text-lavender font-bold text-xs animate-pulse">🔍 Searching workspace assets using AI semantic matcher...</div>';
+
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.search_media_semantic(query, activeDirectory);
+        if (res && res.status === 'success') {
+          if (countLbl) countLbl.innerText = `${res.total_matches} Match(es) Found`;
+          if (res.items && res.items.length > 0) {
+            let html = '';
+            res.items.forEach(item => {
+              const safePath = (item.path || '').replace(/\\/g, '\\\\');
+              html += `<div class="p-4 bg-obsidian border border-slate-800 rounded-2xl space-y-2 hover:border-slate-700 transition-all flex items-start space-x-3">
+                <div class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-xl shrink-0">
+                  ${item.is_image ? '🖼️' : '📄'}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex justify-between items-center">
+                    <p class="font-bold text-white text-xs truncate">${item.original_name}</p>
+                    <span class="font-mono text-[10px] font-bold text-mint bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-full">${item.score}% Match</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 font-mono truncate mt-0.5">${item.snippet || item.path}</p>
+                  <div class="pt-2 flex space-x-2">
+                    <button onclick="openInExplorer('${safePath}')" class="px-3 py-1 bg-slate-900 border border-slate-700 hover:border-lavender rounded-lg text-[10px] font-bold text-white">📁 Open Folder</button>
+                  </div>
+                </div>
+              </div>`;
+            });
+            container.innerHTML = html;
+            addDynamicNotification("Semantic Search Executed", `Found ${res.total_matches} match(es) for '${query}'`, "info");
+          } else {
+            container.innerHTML = '<div class="col-span-full p-8 text-center text-slate-500 text-xs">No matching files found for this query.</div>';
+          }
+        } else {
+          container.innerHTML = `<div class="col-span-full p-8 text-center text-rose-400 text-xs">${res.message || "Search failed."}</div>`;
+        }
+      }
+    }
+
+    function getEffectivePersonality() {
+      if (selectedPersonality === 'creative') {
+        const sel = document.getElementById('persona-select');
+        return sel ? sel.value : 'Creative';
+      }
+      return selectedPersonality;
+    }
+
+    let dynamicNotifications = [
+      { id: 1, title: "Engine Active", message: "Moondream 2 VLM offline engine ready.", icon: "🟢", color: "text-mint", time: "Just now" },
+      { id: 2, title: "System Ready", message: "FlexBit AI workspace initialized.", icon: "⚡", color: "text-lavender", time: "Just now" }
+    ];
+    let unreadNotificationCount = 2;
+
+    function renderNotifications() {
+      const container = document.getElementById('notification-list-container');
+      const badge = document.getElementById('notification-unread-badge');
+      if (badge) {
+        if (unreadNotificationCount > 0) {
+          badge.innerText = unreadNotificationCount;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+
+      if (!container) return;
+      if (dynamicNotifications.length === 0) {
+        container.innerHTML = '<p class="text-slate-500 text-xs text-center py-4">No recent notifications.</p>';
+        return;
+      }
+
+      let html = '';
+      dynamicNotifications.forEach(n => {
+        html += `<div class="p-3 bg-slate-950 rounded-xl border border-slate-800/80 hover:border-slate-700 transition-all space-y-1">
+          <div class="flex justify-between items-center">
+            <span class="font-bold ${n.color || 'text-white'} flex items-center space-x-1.5">
+              <span>${n.icon || '🔔'}</span> <span>${n.title}</span>
+            </span>
+            <span class="font-mono text-[9px] text-slate-500">${n.time || ''}</span>
+          </div>
+          <p class="text-slate-300 text-[11px] leading-snug">${n.message}</p>
+        </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function addDynamicNotification(title, message, iconType) {
+      const icons = {
+        success: { icon: "🟢", color: "text-mint" },
+        info: { icon: "📜", color: "text-lavender" },
+        alert: { icon: "⚡", color: "text-amber-400" },
+        error: { icon: "🛑", color: "text-rose-400" },
+        cheat: { icon: "🎮", color: "text-pink-400" }
+      };
+      const typeInfo = icons[iconType] || { icon: "🔔", color: "text-white" };
+      const newNotif = {
+        id: Date.now(),
+        title: title,
+        message: message,
+        icon: typeInfo.icon,
+        color: typeInfo.color,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      dynamicNotifications.unshift(newNotif);
+      unreadNotificationCount++;
+      renderNotifications();
+    }
+
+    function toggleNotifications() {
+      const drawer = document.getElementById('notification-drawer');
+      if (drawer) {
+        drawer.classList.toggle('hidden');
+        if (!drawer.classList.contains('hidden')) {
+          unreadNotificationCount = 0;
+          renderNotifications();
+        }
+      }
+    }
+
+    function clearAllNotifications() {
+      dynamicNotifications = [];
+      unreadNotificationCount = 0;
+      renderNotifications();
+    }
+
+    window.addEventListener('click', (e) => {
+      const drawer = document.getElementById('notification-drawer');
+      const bellBtn = document.getElementById('notification-bell-btn');
+      if (drawer && !drawer.classList.contains('hidden')) {
+        if (!drawer.contains(e.target) && bellBtn && !bellBtn.contains(e.target)) {
+          drawer.classList.add('hidden');
+        }
+      }
+    });
+
+    async function updateLivePreview() {
+      if (!activeDirectory) return;
+      const langScript = document.querySelector('input[name="lang-script"]:checked') ? document.querySelector('input[name="lang-script"]:checked').value : 'English';
+      const effectivePersona = getEffectivePersonality();
+
+      if (window.pywebview && window.pywebview.api) {
+        const preview = await window.pywebview.api.get_directory_preview({
+          directory: activeDirectory,
+          personality: effectivePersona,
+          language: langScript,
+          emoji: selectedEmoji,
+          pattern: selectedPattern
+        });
+
+        if (preview && preview.status === 'success') {
+          document.getElementById('preview-detected-count').innerText = `${preview.total_files} Asset(s) Detected`;
+          document.getElementById('expected-duration-lbl').innerText = `Expected Duration: ${preview.expected_duration_str} (${preview.total_files} files)`;
+
+          const container = document.getElementById('live-preview-container');
+          if (preview.items && preview.items.length > 0) {
+            let html = '';
+            preview.items.forEach(item => {
+              html += `<div class="p-3 bg-obsidian rounded-xl flex items-center space-x-3 border border-slate-800/60">
+                <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-lg shrink-0">${item.is_image ? '🖼️' : '📄'}</div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-mono text-[10px] text-slate-400 truncate">${item.original_name}</p>
+                  <p class="font-mono text-xs font-bold text-mint truncate">${item.predicted_name}</p>
+                </div>
+                <span class="w-5 h-5 rounded-full bg-emerald-950 text-emerald-400 text-xs flex items-center justify-center font-bold shrink-0">✓</span>
+              </div>`;
+            });
+            container.innerHTML = html;
+          } else {
+            container.innerHTML = '<p class="text-slate-400 text-xs text-center p-4">No files found in selected directory.</p>';
+          }
+        }
+      }
+    }
+
+    let galleryActiveFilter = 'all';
+
+    async function loadGalleryAssets() {
+      const container = document.getElementById('gallery-asset-grid');
+      if (!container) return;
+
+      if (window.pywebview && window.pywebview.api) {
+        try {
+          const history = await window.pywebview.api.get_history('recent');
+          let allOps = [];
+          if (history) {
+            history.forEach(sess => {
+              if (sess.operations) {
+                sess.operations.forEach(op => {
+                  allOps.push({ ...op, session_name: sess.session_name, timestamp: sess.timestamp });
+                });
+              }
+            });
+          }
+
+          if (galleryActiveFilter !== 'all') {
+            allOps = allOps.filter(op => {
+              const name = (op.new_name || op.original_name || '').toLowerCase();
+              if (galleryActiveFilter === 'image') return ['.png', '.jpg', '.jpeg', '.webp'].some(ext => name.endsWith(ext));
+              if (galleryActiveFilter === 'doc') return ['.pdf', '.docx', '.txt', '.csv'].some(ext => name.endsWith(ext));
+              if (galleryActiveFilter === 'media') return ['.mp4', '.mkv', '.avi', '.mp3', '.wav', '.flac'].some(ext => name.endsWith(ext));
+              return true;
+            });
+          }
+
+          if (allOps.length > 0) {
+            let html = '';
+            allOps.forEach(op => {
+              const name = op.new_name || op.original_name;
+              const isImg = ['.png', '.jpg', '.jpeg', '.webp'].some(ext => name.toLowerCase().endsWith(ext));
+              const icon = isImg ? '🖼️' : (['.pdf','.docx','.txt'].some(ext => name.toLowerCase().endsWith(ext)) ? '📄' : '🎵');
+              const path = op.new_path || op.original_path;
+
+              html += `<div class="bg-obsidian border border-slate-800 rounded-2xl p-4 space-y-3 hover:border-lavender/60 transition-all flex flex-col justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-xl shrink-0 border border-slate-800">${icon}</div>
+                  <div class="min-w-0 flex-1">
+                    <h4 class="font-bold text-xs text-white truncate" title="${name}">${name}</h4>
+                    <p class="font-mono text-[10px] text-slate-400 truncate">${op.original_name}</p>
+                  </div>
+                </div>
+                <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                  <span class="font-mono text-[10px] text-slate-500">${op.timestamp || 'Recent'}</span>
+                  <button onclick="openInExplorer('${path.replace(/\\/g, '\\\\')}')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300 rounded-lg">📁 Locate</button>
+                </div>
+              </div>`;
+            });
+            container.innerHTML = html;
+          } else {
+            container.innerHTML = '<p class="text-slate-500 text-xs col-span-4 text-center p-8">No visual assets match the selected filter.</p>';
+          }
+        } catch (err) {
+          console.error("Gallery load error:", err);
+        }
+      }
+    }
+
+    function filterGallery(tag) {
+      galleryActiveFilter = tag;
+      ['all', 'image', 'doc', 'media'].forEach(t => {
+        const btn = document.getElementById('gfilter-' + t);
+        if (btn) {
+          if (t === tag) btn.className = "px-4 py-2 bg-lavenderFill text-lavenderDark rounded-xl font-bold";
+          else btn.className = "px-4 py-2 bg-obsidian border border-slate-700 text-slate-300 rounded-xl hover:border-slate-500 font-bold";
+        }
+      });
+      loadGalleryAssets();
+    }
+
+    let pendingAnalysisAction = null;
+    let analysisPreviewItems = [];
+
+    async function runBatchAction() {
+      if (!activeDirectory) {
+        await selectDirectory();
+        if (!activeDirectory) return;
+      }
+      openAnalysisModal('rename', {
+        directory: activeDirectory,
+        personality: getEffectivePersonality(),
+        language: document.querySelector('input[name="lang-script"]:checked') ? document.querySelector('input[name="lang-script"]:checked').value : 'English',
+        emoji: selectedEmoji,
+        pattern: selectedPattern,
+        cheat_mode: activeCheatMode || ""
+      });
+    }
+
+    async function selectDirectoryForJunk() {
+      await selectDirectory();
+      const junkLbl = document.getElementById('junk-dir-label');
+      if (junkLbl && activeDirectory) junkLbl.innerText = activeDirectory;
+    }
+
+    async function runJunkQuarantine(depth) {
+      if (!activeDirectory) {
+        await selectDirectoryForJunk();
+        if (!activeDirectory) return;
+      }
+      openAnalysisModal('junk', {
+        depth: depth,
+        directory: activeDirectory
+      });
+    }
+
+    function selectOrgStrategy(stratKey) {
+      selectedOrgStrategyType = stratKey;
+      const strats = ['content', 'modifier', 'nesting', 'extensions'];
+      strats.forEach(s => {
+        const card = document.getElementById('org-card-' + s);
+        const badge = document.getElementById('bento-badge-' + s);
+        const desc = document.getElementById('bento-desc-' + s);
+        const sample = document.getElementById('bento-sample-' + s);
+
+        if (card) {
+          if (s === stratKey) {
+            card.style.flex = "2.5";
+            card.style.opacity = "1";
+            card.style.borderColor = "#a855f7";
+            card.style.borderWidth = "2px";
+            card.style.boxShadow = "0 20px 25px -5px rgba(88, 28, 135, 0.4)";
+            if (badge) badge.classList.remove('hidden');
+            if (desc) desc.classList.remove('truncate');
+            if (sample) sample.classList.remove('hidden');
+          } else {
+            card.style.flex = "1";
+            card.style.opacity = "0.75";
+            card.style.borderColor = "rgba(255, 255, 255, 0.1)";
+            card.style.borderWidth = "1px";
+            card.style.boxShadow = "none";
+            if (badge) badge.classList.add('hidden');
+            if (desc) desc.classList.add('truncate');
+            if (sample) sample.classList.add('hidden');
+          }
+        }
+      });
+      updateOrgLivePreviewTree();
+    }
+
+    let currentOrgNamingScheme = 'standard';
+
+    function selectOrgNamingScheme(scheme) {
+      currentOrgNamingScheme = scheme;
+      ['standard', 'lowercase', 'emoji', 'dated'].forEach(s => {
+        const card = document.getElementById('org-nscheme-' + s);
+        if (card) {
+          if (s === scheme) {
+            card.className = "p-3 bg-obsidian border-2 border-lavender rounded-xl flex flex-col cursor-pointer transition-all";
+          } else {
+            card.className = "p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600";
+          }
+        }
+      });
+      updateOrgLivePreviewTree();
+    }
+
+    async function updateOrgLivePreviewTree() {
+      const container = document.getElementById('org-explorer-tree');
+      if (!container) return;
+      const targetDir = activeOrgDirectory || activeDirectory;
+      if (!targetDir) {
+        container.innerHTML = '<p class="text-slate-500 text-xs col-span-3">Select a workspace folder above to view live interactive folder tree organization preview.</p>';
+        return;
+      }
+
+      if (window.pywebview && window.pywebview.api) {
+        try {
+          const res = await window.pywebview.api.get_organization_preview(targetDir, selectedOrgStrategyType, currentOrgNamingScheme);
+          if (res && res.status === 'success' && res.tree) {
+            let html = '';
+            const tree = res.tree;
+            const folders = Object.keys(tree);
+            if (folders.length === 0) {
+              container.innerHTML = '<p class="text-slate-400 text-xs col-span-3">No files found in directory for organization.</p>';
+              return;
+            }
+
+            folders.forEach(folder => {
+              const files = tree[folder];
+              html += `<div class="p-3 bg-obsidian border border-slate-800 rounded-xl space-y-2 col-span-3 sm:col-span-1">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                  <span class="font-bold text-xs text-white truncate">${folder}</span>
+                  <span class="font-mono text-[10px] bg-slate-900 text-mint border border-slate-800 px-2 py-0.5 rounded-md">${files.length} item(s)</span>
+                </div>
+                <div class="space-y-1 max-h-28 overflow-y-auto font-mono text-[10px] text-slate-400">`;
+              files.slice(0, 5).forEach(f => {
+                html += `<p class="truncate">📄 ${f}</p>`;
+              });
+              if (files.length > 5) {
+                html += `<p class="text-slate-500 italic">+${files.length - 5} more...</p>`;
+              }
+              html += `</div></div>`;
+            });
+            container.innerHTML = html;
+          }
+        } catch (e) {
+          console.error("Org preview error:", e);
+        }
+      }
+    }
+
+    async function runFileOrganizationAction() {
+      if (!activeOrgDirectory) {
+        await selectOrgDirectory();
+        if (!activeOrgDirectory) return;
+      }
+      openAnalysisModal('org', {
+        strategy: selectedOrgStrategyType,
+        directory: activeOrgDirectory,
+        naming_scheme: currentOrgNamingScheme
+      });
+    }
+
+    async function openAnalysisModal(actionType, params) {
+      pendingAnalysisAction = { type: actionType, params: params };
+      const modal = document.getElementById('file-analysis-modal');
+      const container = document.getElementById('analysis-file-list-container');
+      const titleEl = document.getElementById('analysis-modal-title');
+      const subEl = document.getElementById('analysis-modal-subtitle');
+      
+      if (actionType === 'rename') {
+        titleEl.innerText = '⚡ AI Batch Renaming — Scanned Asset Preview';
+        subEl.innerText = `Directory: ${params.directory} • Review proposed AI filenames below`;
+      } else if (actionType === 'junk') {
+        titleEl.innerText = '🧹 Junk File Quarantine — Pre-Cleaning Inspection';
+        subEl.innerText = `Directory: ${params.directory} • Depth: ${params.depth.toUpperCase()}`;
+      } else if (actionType === 'org') {
+        titleEl.innerText = '📁 Workspace File Organization — Pre-Categorization Preview';
+        subEl.innerText = `Directory: ${params.directory} • Strategy: ${params.strategy.toUpperCase()}`;
+      }
+
+      container.innerHTML = '<div class="p-8 text-center text-lavender font-bold text-xs animate-pulse">🔍 Scanning and analyzing files for pre-execution preview...</div>';
+      modal.classList.remove('hidden');
+
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.get_directory_preview({
+          directory: params.directory,
+          personality: params.personality || 'natural',
+          pattern: params.pattern || 'vibrant',
+          language: params.language || 'English',
+          max_items: 500
+        });
+
+        if (res && res.status === 'success' && res.items && res.items.length > 0) {
+          analysisPreviewItems = res.items;
+          document.getElementById('analysis-estimated-time-lbl').innerText = `Expected Duration: ${res.expected_duration_str} (${res.total_files} files)`;
+          renderAnalysisFileList();
+        } else {
+          container.innerHTML = '<div class="p-8 text-center text-slate-400 text-xs">No eligible files found in selected directory.</div>';
+          analysisPreviewItems = [];
+          updateAnalysisSelectionBadge();
+        }
+      }
+    }
+
+    function renderAnalysisFileList() {
+      const container = document.getElementById('analysis-file-list-container');
+      let html = '';
+      
+      analysisPreviewItems.forEach((item, idx) => {
+        const fsizeStr = item.size > 1024 * 1024 
+          ? (item.size / (1024 * 1024)).toFixed(1) + ' MB' 
+          : (item.size > 1024 ? Math.round(item.size / 1024) + ' KB' : item.size + ' B');
+
+        let targetText = item.predicted_name;
+        let badgeColor = 'text-mint font-bold';
+        if (pendingAnalysisAction.type === 'junk') {
+          targetText = '_Unnecessary_Files/' + item.original_name;
+          badgeColor = 'text-amber-400 font-bold';
+        } else if (pendingAnalysisAction.type === 'org') {
+          targetText = 'Organized/' + item.original_name;
+          badgeColor = 'text-cyan font-bold';
+        }
+
+        html += `
+          <div class="p-3.5 bg-obsidian border border-slate-800 hover:border-slate-700 rounded-xl flex items-center justify-between text-xs space-x-3 transition-all">
+            <div class="flex items-center space-x-3 min-w-0 flex-1">
+              <input type="checkbox" checked value="${item.original_name}" onchange="onAnalysisRowCheckboxChange()" class="analysis-file-cb accent-lavender w-4 h-4 rounded cursor-pointer shrink-0">
+              <div class="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-base shrink-0">
+                ${item.is_image ? '🖼️' : '📄'}
+              </div>
+              <div class="min-w-0 flex-1 font-mono">
+                <p class="text-slate-300 truncate" title="${item.original_name}"><span class="text-slate-500 font-sans">File:</span> ${item.original_name}</p>
+                <p class="${badgeColor} truncate"><span class="text-slate-500 font-sans">Target:</span> ${targetText}</p>
+              </div>
+            </div>
+            <span class="font-mono text-[10px] text-slate-500 shrink-0">${fsizeStr}</span>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      document.getElementById('analysis-select-all-cb').checked = true;
+      updateAnalysisSelectionBadge();
+    }
+
+    function toggleAnalysisSelectAll(checked) {
+      const cbs = document.querySelectorAll('.analysis-file-cb');
+      cbs.forEach(cb => cb.checked = checked);
+      updateAnalysisSelectionBadge();
+    }
+
+    function onAnalysisRowCheckboxChange() {
+      const allCbs = document.querySelectorAll('.analysis-file-cb');
+      const checkedCbs = document.querySelectorAll('.analysis-file-cb:checked');
+      const masterCb = document.getElementById('analysis-select-all-cb');
+      if (masterCb) {
+        masterCb.checked = (allCbs.length > 0 && allCbs.length === checkedCbs.length);
+      }
+      updateAnalysisSelectionBadge();
+    }
+
+    function updateAnalysisSelectionBadge() {
+      const checkedCbs = document.querySelectorAll('.analysis-file-cb:checked');
+      const total = analysisPreviewItems.length;
+      const count = checkedCbs.length;
+
+      const badge = document.getElementById('analysis-selected-count-badge');
+      if (badge) badge.innerText = `${count} / ${total} Selected`;
+      
+      const btnText = document.getElementById('analysis-confirm-btn-text');
+      const btn = document.getElementById('analysis-confirm-btn');
+      if (btnText) btnText.innerText = `Continue Operation (${count} Selected)`;
+      if (btn) btn.disabled = (count === 0);
+    }
+
+    function closeAnalysisModal() {
+      const modal = document.getElementById('file-analysis-modal');
+      if (modal) modal.classList.add('hidden');
+      pendingAnalysisAction = null;
+    }
+
+    async function executeConfirmedAnalysisAction() {
+      if (!pendingAnalysisAction) return;
+
+      const checkedCbs = document.querySelectorAll('.analysis-file-cb:checked');
+      const selectedFiles = Array.from(checkedCbs).map(cb => cb.value);
+
+      if (selectedFiles.length === 0) {
+        alert("Please select at least one file to proceed.");
+        return;
+      }
+
+      const { type, params } = pendingAnalysisAction;
+      closeAnalysisModal();
+
+      if (type === 'rename') {
+        activeTaskScreenId = "screen-execution";
+        const btn = document.getElementById('batch-action-btn');
+        if (btn) { btn.innerText = "PROCESSING BATCH..."; btn.disabled = true; }
+
+        if (window.pywebview && window.pywebview.api) {
+          const res = await window.pywebview.api.start_renaming({
+            ...params,
+            selected_files: selectedFiles
+          });
+          if (res.status === 'started') {
+            console.log(`Batch renaming started on ${selectedFiles.length} selected file(s).`);
+          } else {
+            alert(res.message);
+          }
+        }
+        if (btn) { btn.innerText = "START AI BATCH ACTION"; btn.disabled = false; }
+      } else if (type === 'junk') {
+        activeTaskScreenId = "screen-junk";
+        if (window.pywebview && window.pywebview.api) {
+          const res = await window.pywebview.api.run_junk_quarantine(params.depth, params.directory, selectedFiles);
+          if (res.status === 'started') {
+            console.log(`Junk quarantine started on ${selectedFiles.length} selected file(s).`);
+          } else {
+            alert(res.message);
+          }
+        }
+      } else if (type === 'org') {
+        activeTaskScreenId = "screen-file-org";
+        if (window.pywebview && window.pywebview.api) {
+          const res = await window.pywebview.api.run_file_organization(params.strategy, params.directory, selectedFiles, params.naming_scheme);
+          if (res.status === 'started') {
+            console.log(`File organization started on ${selectedFiles.length} selected file(s).`);
+          } else {
+            alert(res.message);
+          }
+        }
+      }
+    }
+
+    // MODULE 2: FILE ORGANIZATION EXPLORER LOGIC
+    async function selectOrgDirectory() {
+      let path = "";
+      if (window.pywebview && window.pywebview.api) {
+        path = await window.pywebview.api.select_directory();
+      }
+      if (!path) {
+        path = prompt("Enter or paste full folder path to organize:", activeOrgDirectory || activeDirectory || "C:\\Users");
+      }
+      if (path && path.trim()) {
+        activeOrgDirectory = path.trim();
+        loadOrgDirectoryTree(activeOrgDirectory);
+      }
+    }
+
+    async function loadOrgDirectoryTree(path) {
+      if (!path) return;
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.get_directory_contents(path);
+        if (res && res.status === 'success') {
+          activeOrgDirectory = res.current_dir;
+          document.getElementById('org-current-path-lbl').innerText = `Directory: ${res.current_dir}`;
+          const treeContainer = document.getElementById('org-explorer-tree');
+
+          if (res.items && res.items.length > 0) {
+            let html = '';
+            res.items.forEach(item => {
+              const icon = item.is_dir ? '📁' : (['.png','.jpg','.jpeg'].includes(item.ext) ? '🖼️' : '📄');
+              const dblClickAction = item.is_dir ? `ondblclick="navigateOrgFolder('${item.path.replace(/\\/g, '\\\\')}')"` : '';
+              html += `<div ${dblClickAction} class="p-3 bg-obsidian border border-slate-800 rounded-xl hover:border-mint/60 cursor-pointer flex items-center space-x-3 transition-all select-none">
+                <span class="text-lg">${icon}</span>
+                <div class="min-w-0 flex-1">
+                  <p class="font-bold text-xs text-slate-100 truncate">${item.name}</p>
+                  <p class="font-mono text-[10px] text-slate-500">${item.is_dir ? 'Folder' : (item.size > 1024 ? Math.round(item.size/1024) + ' KB' : item.size + ' B')}</p>
+                </div>
+              </div>`;
+            });
+            treeContainer.innerHTML = html;
+          } else {
+            treeContainer.innerHTML = '<p class="text-slate-500 text-xs col-span-3 text-center p-4">Empty folder.</p>';
+          }
+        }
+      }
+    }
+
+    function navigateOrgFolder(folderPath) {
+      loadOrgDirectoryTree(folderPath);
+    }
+
+    async function navigateOrgParent() {
+      if (!activeOrgDirectory) return;
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.get_directory_contents(activeOrgDirectory);
+        if (res && res.parent_dir) {
+          loadOrgDirectoryTree(res.parent_dir);
+        }
+      }
+    }
+
+    async function runFileOrganizationAction() {
+      if (!activeOrgDirectory) {
+        await selectOrgDirectory();
+        if (!activeOrgDirectory) return;
+      }
+
+      activeTaskScreenId = "screen-file-org";
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.run_file_organization(selectedOrgStrategyType, activeOrgDirectory);
+        if (res.status === 'started') {
+          console.log("File organization started.");
+        } else {
+          alert(res.message);
+        }
+      }
+    }
+
+    async function updateAccountScreenMetrics() {
+      if (window.pywebview && window.pywebview.api) {
+        try {
+          const history = await window.pywebview.api.get_history('recent');
+          const cfg = await window.pywebview.api.get_config();
+
+          let totalFiles = 0;
+          let totalSessions = history ? history.length : 0;
+          let launchCount = (cfg && cfg.app_launch_count) ? cfg.app_launch_count : 1;
+          let totalStorageMB = 0;
+          let taskTimelineHtml = '';
+
+          if (history && history.length > 0) {
+            history.forEach(sess => {
+              const count = sess.file_count || (sess.operations ? sess.operations.length : 0);
+              totalFiles += count;
+
+              if (sess.operations) {
+                sess.operations.forEach(op => {
+                  totalStorageMB += (op.size || 650 * 1024) / (1024 * 1024);
+                });
+              }
+
+              const opTypeStr = sess.op_type === 'quarantine' ? '🧹 Junk Quarantine' : (sess.op_type === 'organize' ? '📁 File Organization' : '⚡ AI Photo Renaming');
+              taskTimelineHtml += `<div class="p-3 bg-obsidian rounded-xl border border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-sm">${sess.op_type === 'quarantine' ? '🧹' : (sess.op_type === 'organize' ? '📁' : '⚡')}</div>
+                  <div>
+                    <p class="font-bold text-xs text-white">${sess.session_name || opTypeStr}</p>
+                    <p class="font-mono text-[10px] text-slate-400">${sess.timestamp} • ${count} File(s) Processed</p>
+                  </div>
+                </div>
+                <span class="font-mono text-[10px] bg-slate-900 text-mint border border-slate-800 px-2.5 py-0.5 rounded-full">${(sess.status || 'completed').toUpperCase()}</span>
+              </div>`;
+            });
+          }
+
+          const totalSessEl = document.getElementById('stat-sessions-count');
+          if (totalSessEl) totalSessEl.innerText = `${totalSessions} Session(s)`;
+
+          const totalLaunchEl = document.getElementById('stat-launches-count');
+          if (totalLaunchEl) totalLaunchEl.innerText = `${launchCount} Launch(es)`;
+
+          const totalProc = document.getElementById('stat-files-processed');
+          if (totalProc) totalProc.innerText = totalFiles;
+
+          const timeSavedHours = (totalFiles * 2.5 / 60).toFixed(1);
+          const statTimeEl = document.getElementById('stat-time-saved');
+          if (statTimeEl) statTimeEl.innerText = `~${timeSavedHours} Hours`;
+
+          const timelineContainer = document.getElementById('account-task-timeline-container');
+          if (timelineContainer) {
+            timelineContainer.innerHTML = taskTimelineHtml || '<p class="text-slate-500 text-xs text-center py-4">No task activity logged yet. Execute Module 1, 2, or 3 to populate analytics.</p>';
+          }
+
+          renderActivityGraph(history || []);
+        } catch (e) {
+          console.error("Account stats update error:", e);
+        }
+      }
+    }
+
+    function renderActivityGraph(history) {
+      const svg = document.getElementById('account-activity-svg-graph');
+      if (!svg) return;
+
+      let sessionData = [];
+      if (history && history.length > 0) {
+        sessionData = history.slice(0, 7).reverse().map((s, idx) => ({
+          label: s.session_name ? s.session_name.substring(0, 8) : `Sess ${idx+1}`,
+          val: s.file_count || (s.operations ? s.operations.length : 0)
+        }));
+      }
+
+      if (sessionData.length < 5) {
+        const defaults = [
+          { label: 'Sess 1', val: 12 },
+          { label: 'Sess 2', val: 28 },
+          { label: 'Sess 3', val: 45 },
+          { label: 'Sess 4', val: 18 },
+          { label: 'Sess 5', val: 64 }
+        ];
+        sessionData = sessionData.concat(defaults.slice(sessionData.length));
+      }
+
+      let maxVal = Math.max(...sessionData.map(d => d.val), 50);
+      let svgHtml = '';
+
+      sessionData.forEach((d, idx) => {
+        const heightPct = Math.max(15, Math.round((d.val / maxVal) * 110));
+        const x = 25 + idx * 75;
+        const y = 135 - heightPct;
+        svgHtml += `
+          <rect x="${x}" y="${y}" width="46" height="${heightPct}" rx="8" fill="url(#barGradient)" class="hover:opacity-80 transition-opacity" />
+          <text x="${x + 23}" y="${y - 8}" text-anchor="middle" fill="#a855f7" font-size="10" font-weight="bold" font-family="monospace">${d.val}</text>
+          <text x="${x + 23}" y="154" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="bold">${d.label}</text>
+        `;
+      });
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#a855f7" />
+            <stop offset="100%" stop-color="#3b82f6" />
+          </linearGradient>
+        </defs>
+        ${svgHtml}
+      `;
+    }
+
+    // SESSION RECENT ACTIONS & UNDO VAULT
+    async function loadHistoryData() {
+      const container = document.getElementById('history-container');
+      if (!container) return;
+      const sortOrder = document.getElementById('history-sort-select') ? document.getElementById('history-sort-select').value : 'recent';
+
+      if (window.pywebview && window.pywebview.api) {
+        try {
+          const history = await window.pywebview.api.get_history(sortOrder);
+          userSessionCount = history ? history.length : 0;
+          if (history && history.length > 0) {
+            let html = '<div class="space-y-4">';
+            history.forEach((s, sIdx) => {
+              const sessName = s.session_name || `Session ${s.session_id}`;
+              const isReverted = s.status === 'reverted';
+              const isPartiallyReverted = s.status === 'partially_reverted';
+              const badgeColor = isReverted ? 'bg-rose-950 text-rose-400 border-rose-800' : (isPartiallyReverted ? 'bg-amber-950 text-amber-400 border-amber-800' : 'bg-emerald-950 text-emerald-400 border-emerald-800');
+              const sampleFile = (s.operations && s.operations.length > 0) ? s.operations[0].new_path : "";
+
+              html += `<div class="bg-obsidian border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl">
+                <div class="flex items-center justify-between cursor-pointer" onclick="toggleSessionExpand('sess-details-${sIdx}')">
+                  <div class="flex items-center space-x-3">
+                    <span class="text-xl">✨</span>
+                    <div>
+                      <h4 class="font-bold text-white text-base hover:text-lavender transition-colors">${sessName}</h4>
+                      <p class="text-xs text-slate-400 font-mono">${s.timestamp} • ${s.file_count} File(s) (${(s.op_type||'').toUpperCase()})</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    ${sampleFile ? `<button onclick="event.stopPropagation(); openInExplorer('${sampleFile.replace(/\\/g, '\\\\')}')" title="Open in File Explorer" class="px-3 py-1.5 bg-slate-900 border border-slate-700 hover:border-lavender text-xs font-bold text-slate-200 rounded-xl transition-all flex items-center space-x-1"><span>📁</span> <span>Open in Explorer</span></button>` : ''}
+                    <span class="font-mono text-xs px-3 py-1 rounded-full border ${badgeColor}">${(s.status||'completed').toUpperCase()}</span>
+                    <span class="text-slate-400 text-xs font-bold">▼ Details</span>
+                  </div>
+                </div>
+
+                <!-- Expanded Operations Detail List with Real Visual File Cards -->
+                <div id="sess-details-${sIdx}" class="hidden pt-3 border-t border-slate-800/80 space-y-3">
+                  <div class="flex items-center justify-between text-xs text-slate-400 pb-1">
+                    <span>Select files to revert individually:</span>
+                    <div class="flex space-x-2">
+                      <button onclick="revertSelectedFiles('${s.session_id}', 'sess-details-${sIdx}')" class="px-3.5 py-1.5 bg-lavenderFill hover:bg-lavender text-lavenderDark font-bold rounded-lg transition-all">↩️ Revert Selected Files</button>
+                      <button onclick="revertSession('${s.session_id}')" class="px-3.5 py-1.5 bg-rose-900/60 hover:bg-rose-800 border border-rose-700 text-rose-200 font-bold rounded-lg transition-all">↩️ Revert Entire Session</button>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2 max-h-60 overflow-y-auto pr-1">`;
+
+              if (s.operations && s.operations.length > 0) {
+                s.operations.forEach((op, opIdx) => {
+                  const opReverted = op.reverted || false;
+                  const targetOpPath = op.new_path || op.original_path;
+                  const name = op.new_name || op.original_name;
+                  const isImg = ['.png', '.jpg', '.jpeg', '.webp'].some(ext => name.toLowerCase().endsWith(ext));
+                  const extStr = (name.split('.').pop() || 'FILE').toUpperCase();
+
+                  html += `<div class="p-3 bg-slate-950 border border-slate-800/80 rounded-xl flex items-center justify-between text-xs hover:border-slate-700 transition-all">
+                    <div class="flex items-center space-x-3 min-w-0 flex-1">
+                      <input type="checkbox" ${opReverted ? 'disabled' : 'checked'} value="${op.original_path}" class="sess-op-cb-${sIdx} accent-lavender w-4 h-4 rounded">
+                      
+                      <!-- REAL VISUAL PREVIEW CARD -->
+                      <div class="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
+                        ${isImg 
+                          ? `<span class="font-mono text-[9px] font-bold text-lavender bg-purple-950/80 px-1.5 py-0.5 rounded">🖼️ ${extStr}</span>`
+                          : `<span class="font-mono text-[9px] font-bold text-slate-300 bg-slate-800 px-1.5 py-0.5 rounded">📄 ${extStr}</span>`
+                        }
+                      </div>
+
+                      <div class="min-w-0 flex-1 font-mono">
+                        <p class="text-slate-400 truncate text-[11px]"><span class="text-slate-500">ORIGINAL:</span> ${op.original_name || op.original_path}</p>
+                        <p class="text-mint truncate font-bold text-xs"><span class="text-slate-500">RESULT:</span> ${op.new_name || op.new_path}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2 ml-3 shrink-0">
+                      <button onclick="openInExplorer('${targetOpPath.replace(/\\/g, '\\\\')}')" title="Locate in File Explorer" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300 rounded-lg">📁 Show</button>
+                      <span class="font-mono text-[10px] px-2 py-0.5 rounded ${opReverted ? 'bg-rose-950 text-rose-400' : 'bg-emerald-950 text-emerald-400'}">${opReverted ? 'REVERTED' : 'ACTIVE'}</span>
+                    </div>
+                  </div>`;
+                });
+              }
+
+              html += `</div></div></div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+          } else {
+            container.innerHTML = '<p class="text-slate-400 text-sm text-center p-8">Session Vault is currently empty.</p>';
+          }
+        } catch (err) {
+          console.error("Error loading session history:", err);
+          container.innerHTML = '<p class="text-slate-400 text-sm text-center p-8">No recorded sessions found yet.</p>';
+        }
+      }
+    }
+
+    function toggleSessionExpand(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    async function revertSession(sessionId) {
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.revert_session(sessionId);
+        alert(res.message);
+        loadHistoryData();
+      }
+    }
+
+    async function revertSelectedFiles(sessionId, containerId) {
+      const cbs = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
+      const selectedPaths = Array.from(cbs).map(cb => cb.value);
+
+      if (selectedPaths.length === 0) {
+        alert("Please select at least one file to revert.");
+        return;
+      }
+
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.revert_session_files(sessionId, selectedPaths);
+        alert(res.message);
+        loadHistoryData();
+      }
+    }
+
+    function selectPersonality(type) {
+      selectedPersonality = type;
+      ['natural', 'efficiency', 'creative'].forEach(t => {
+        const card = document.getElementById('pcard-' + t);
+        if (t === type) {
+          card.className = "p-4 bg-obsidian border-2 border-lavender rounded-xl cursor-pointer transition-all";
+        } else {
+          card.className = "p-4 bg-obsidian border border-glassBorder rounded-xl cursor-pointer transition-all hover:border-slate-600";
+        }
+      });
+      updatePreviewChip();
+      updateLivePreview();
+    }
+
+    function selectEmoji(type) {
+      selectedEmoji = type;
+      ['none', 'leading', 'contextual'].forEach(t => {
+        const card = document.getElementById('ecard-' + t);
+        const ind = document.getElementById('eind-' + t);
+        if (t === type) {
+          card.className = "p-3.5 bg-obsidian border-2 border-lavender rounded-xl cursor-pointer flex items-center justify-between";
+          if (ind) { ind.innerText = "🔘"; ind.className = "text-lavender font-bold"; }
+        } else {
+          card.className = "p-3.5 bg-obsidian border border-glassBorder rounded-xl cursor-pointer flex items-center justify-between";
+          if (ind) { ind.innerText = "◯"; ind.className = "text-slate-500"; }
+        }
+      });
+      updatePreviewChip();
+      updateLivePreview();
+    }
+
+    let currentAvatarData = "🤖";
+    let avatarAngle = 0;
+    let avatarScale = 1.0;
+    let avatarFilter = "none";
+    let userSessionCount = 0;
+    let isCustomAvatar = false;
+    let loadedAvatarImg = null;
+
+    const AVATAR_LIST_50 = [
+      '🤖', '⚡', '🚀', '🐲', '🌌', '🦊', '🐱', '🐶', '🐼', '🦁',
+      '🐯', '🦄', '🐙', '👾', '🎮', '🎨', '🔮', '🌟', '🍕', '🍦',
+      '🌺', '🍓', '🐣', '🦩', '🦥', '🦦', '🦝', '🐸', '🐢', '🐬',
+      '🐳', '🧬', '💎', '👑', '🧢', '🎩', '🎧', '🕹️', '🧸', '🎁',
+      '🏆', '🥇', '🎯', '🛸', '🛰️', '⚓', '⚔️', '🔮', '✨', '🔥'
+    ];
+
+    function render50AvatarGallery() {
+      const container = document.getElementById('avatar-gallery-grid');
+      if (!container) return;
+      let html = '';
+      AVATAR_LIST_50.forEach((av, idx) => {
+        const isSel = currentAvatarData === av;
+        const borderCls = isSel ? 'border-2 border-lavender bg-purple-950/80 scale-110 shadow-lg' : 'border border-slate-800 bg-slate-900 hover:border-slate-600 hover:scale-105';
+        html += `<div onclick="selectPresetAvatar('${av}', 0)" id="av-preset-${idx}" class="w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer transition-all text-lg shadow-sm ${borderCls}">${av}</div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function openAvatarStudioModal() {
+      document.getElementById('avatar-studio-modal').classList.remove('hidden');
+      render50AvatarGallery();
+      drawAvatarCanvas();
+    }
+
+    function closeAvatarStudioModal() {
+      document.getElementById('avatar-studio-modal').classList.add('hidden');
+    }
+
+    function selectPresetAvatar(emoji, requiredSessions) {
+      isCustomAvatar = false;
+      currentAvatarData = emoji;
+      loadedAvatarImg = null;
+      render50AvatarGallery();
+      drawAvatarCanvas();
+    }
+
+    let avatarPanX = 0;
+    let avatarPanY = 0;
+    let isPanningAvatar = false;
+    let startPanX = 0, startPanY = 0;
+
+    function openImageAdjustModal() {
+      const modal = document.getElementById('image-adjust-popup-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        drawAvatarCanvas();
+        initAvatarCanvasDrag();
+      }
+    }
+
+    function closeImageAdjustModal() {
+      const modal = document.getElementById('image-adjust-popup-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function applyImageAdjustModal() {
+      closeImageAdjustModal();
+      addDynamicNotification("Avatar Image Updated", "Custom profile photo adjusted successfully.", "success");
+    }
+
+    function handleAvatarFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+          loadedAvatarImg = img;
+          isCustomAvatar = true;
+          avatarAngle = 0;
+          avatarScale = 1.0;
+          avatarPanX = 0;
+          avatarPanY = 0;
+          avatarFilter = 'none';
+          const slider = document.getElementById('avatar-zoom-slider');
+          if (slider) slider.value = 1.0;
+          const zoomLbl = document.getElementById('avatar-zoom-lbl');
+          if (zoomLbl) zoomLbl.innerText = "1.0x";
+          const filterSel = document.getElementById('avatar-filter-select');
+          if (filterSel) filterSel.value = "none";
+
+          const adjBtn = document.getElementById('avatar-adjust-btn');
+          if (adjBtn) adjBtn.classList.remove('hidden');
+
+          openImageAdjustModal();
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function initAvatarCanvasDrag() {
+      const canvas = document.getElementById('avatar-studio-canvas');
+      if (!canvas || canvas.dataset.dragInited) return;
+      canvas.dataset.dragInited = "true";
+
+      canvas.addEventListener('mousedown', (e) => {
+        if (!loadedAvatarImg) return;
+        isPanningAvatar = true;
+        startPanX = e.clientX - avatarPanX;
+        startPanY = e.clientY - avatarPanY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isPanningAvatar) return;
+        avatarPanX = e.clientX - startPanX;
+        avatarPanY = e.clientY - startPanY;
+        drawAvatarCanvas();
+      });
+
+      window.addEventListener('mouseup', () => {
+        isPanningAvatar = false;
+      });
+    }
+
+    function rotateAvatarCanvas() {
+      avatarAngle = (avatarAngle + 90) % 360;
+      drawAvatarCanvas();
+    }
+
+    function scaleAvatarCanvas(val) {
+      avatarScale = parseFloat(val);
+      document.getElementById('avatar-zoom-lbl').innerText = `${avatarScale.toFixed(1)}x`;
+      drawAvatarCanvas();
+    }
+
+    function applyAvatarFilter(filterName) {
+      avatarFilter = filterName;
+      drawAvatarCanvas();
+    }
+
+    function drawAvatarCanvas() {
+      const canvas = document.getElementById('avatar-studio-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (!loadedAvatarImg) {
+        ctx.fillStyle = '#1E2640';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '50px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(currentAvatarData || '🤖', canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      ctx.save();
+      ctx.translate(canvas.width / 2 + avatarPanX, canvas.height / 2 + avatarPanY);
+      ctx.rotate((avatarAngle * Math.PI) / 180);
+      ctx.scale(avatarScale, avatarScale);
+
+      if (avatarFilter === 'neon') ctx.filter = 'contrast(130%) saturate(180%) hue-rotate(40deg)';
+      else if (avatarFilter === 'cyberpunk') ctx.filter = 'contrast(150%) hue-rotate(280deg) saturate(200%)';
+      else if (avatarFilter === 'grayscale') ctx.filter = 'grayscale(100%) contrast(120%)';
+      else if (avatarFilter === 'sepia') ctx.filter = 'sepia(80%) contrast(110%)';
+      else ctx.filter = 'none';
+
+      ctx.drawImage(loadedAvatarImg, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+      ctx.restore();
+    }
+
+    async function saveAvatarStudioProfile() {
+      const uName = document.getElementById('studio-username-input').value.trim() || "deep";
+      const headerName = document.getElementById('header-username');
+      if (headerName) headerName.innerText = uName;
+
+      const sidebarName = document.getElementById('sidebar-username');
+      if (sidebarName) sidebarName.innerText = uName;
+
+      const accountName = document.getElementById('account-display-name');
+      if (accountName) accountName.innerText = uName;
+
+      const headerContainer = document.getElementById('header-avatar-container');
+      const accountAvatarPreview = document.getElementById('account-avatar-preview');
+
+      if (isCustomAvatar && loadedAvatarImg) {
+        const canvas = document.getElementById('avatar-studio-canvas');
+        const dataUrl = canvas.toDataURL('image/png');
+        if (headerContainer) headerContainer.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-full">`;
+        if (accountAvatarPreview) accountAvatarPreview.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-full">`;
+        if (window.pywebview && window.pywebview.api) {
+          window.pywebview.api.save_config({ user_name: uName, custom_avatar: dataUrl });
+        }
+      } else {
+        if (headerContainer) headerContainer.innerHTML = `<span id="header-avatar-display" class="text-sm">${currentAvatarData}</span>`;
+        if (accountAvatarPreview) accountAvatarPreview.innerHTML = `<span class="text-3xl">${currentAvatarData}</span>`;
+        if (window.pywebview && window.pywebview.api) {
+          window.pywebview.api.save_config({ user_name: uName, preset_avatar: currentAvatarData });
+        }
+      }
+
+      closeAvatarStudioModal();
+      alert("Profile & Avatar saved successfully!");
+    }
+
+    async function updateAccountScreenMetrics() {
+      if (window.pywebview && window.pywebview.api) {
+        try {
+          const cfg = await window.pywebview.api.load_config();
+          if (cfg) {
+            const uName = cfg.user_name || "deep";
+            const accountDisplayName = document.getElementById('account-display-name');
+            if (accountDisplayName) accountDisplayName.innerText = uName;
+
+            const accountAvatarPreview = document.getElementById('account-avatar-preview');
+            if (accountAvatarPreview) {
+              if (cfg.custom_avatar) {
+                accountAvatarPreview.innerHTML = `<img src="${cfg.custom_avatar}" class="w-full h-full object-cover rounded-full">`;
+              } else if (cfg.preset_avatar) {
+                accountAvatarPreview.innerHTML = `<span class="text-3xl">${cfg.preset_avatar}</span>`;
+              }
+            }
+          }
+
+          const stats = await window.pywebview.api.get_account_stats();
+          if (stats && stats.status === 'success') {
+            userSessionCount = stats.total_sessions || 0;
+            const sessSummary = document.getElementById('account-session-summary');
+            if (sessSummary) sessSummary.innerText = `${userSessionCount} Session(s) Completed`;
+
+            const fileProc = document.getElementById('stat-files-processed');
+            if (fileProc) fileProc.innerText = (stats.total_files_renamed || 0).toLocaleString();
+
+            const quarCount = document.getElementById('stat-quarantine-count');
+            if (quarCount) quarCount.innerText = (stats.total_files_quarantined || 0).toLocaleString();
+          }
+        } catch(e) {
+          console.log("Error updating account metrics:", e);
+        }
+      }
+    }
+
+    function toggleAdvancedPowerUserMode(enabled) {
+      const tierLbl = document.getElementById('header-usertier');
+      if (tierLbl) {
+        tierLbl.innerText = enabled ? "🔥 Power User" : "Standard";
+        tierLbl.className = enabled ? "text-[10px] font-bold text-rose-400 truncate" : "text-[10px] font-semibold text-mint truncate";
+      }
+      document.querySelectorAll('.advance-mode-only').forEach(el => {
+        if (enabled) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+      if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.save_config({ user_tier: enabled ? "Power User" : "Normal" });
+      }
+    }
+
+    function selectPattern(type) {
+      selectedPattern = type;
+      ['timestamps', 'org', 'vibrant', 'emoji_name', 'minimalist'].forEach(t => {
+        const card = document.getElementById('pat-' + t);
+        if (card) {
+          if (t === type) {
+            card.className = "p-4 bg-obsidian border-2 border-lavender rounded-xl cursor-pointer";
+          } else {
+            card.className = "p-4 bg-obsidian border border-glassBorder hover:border-slate-600 rounded-xl cursor-pointer";
+          }
+        }
+      });
+      updatePreviewChip();
+      updateLivePreview();
+    }
+
+    function selectOrgStrategy(type) {
+      selectedOrgStrategyType = type;
+      const strategyInfo = {
+        content: {
+          icon: "📁",
+          title: "By Content Strategy Selected",
+          badge: "Transform: File Content ➔ Category Subfolder",
+          desc: "Scans document text headers and file semantics to group items into smart category folders like Invoices, Reports, Photos, Code, Work, and Personal.",
+          transform: "📁 /Invoices/  |  📁 /Photos/  |  📁 /Code/"
+        },
+        modifier: {
+          icon: "≡",
+          title: "Modification Date Strategy Selected",
+          badge: "Transform: Timestamp ➔ Year-Month Subfolder",
+          desc: "Sorts files by file modification date into chronological subfolders (e.g. 2026-08, 2026-07). Perfect for timeline archival.",
+          transform: "📁 /2026-08/  |  📁 /2026-07/  |  📁 /2026-06/"
+        },
+        nesting: {
+          icon: "🌳",
+          title: "Deep Nesting Strategy Selected",
+          badge: "Transform: Multi-Tier Hierarchy Architecture",
+          desc: "Creates clean multi-tiered folder trees based on Category, Year, and File Extension (e.g. Media/2026/PNG, Docs/2026/PDF).",
+          transform: "📁 /Media/2026/PNG/  |  📁 /Docs/2026/PDF/"
+        },
+        extensions: {
+          icon: "🏷️",
+          title: "File Extensions Strategy Selected",
+          badge: "Transform: Format Type ➔ Extension Subfolder",
+          desc: "Groups items into format type subfolders based on extension (.pdf, .jpg, .zip, .exe, .py, .mp4).",
+          transform: "📁 /Images/  |  📁 /Documents/  |  📁 /Executables/"
+        }
+      };
+
+      const info = strategyInfo[type] || strategyInfo['content'];
+      document.getElementById('org-detail-icon').innerText = info.icon;
+      document.getElementById('org-detail-title').innerText = info.title;
+      document.getElementById('org-detail-badge').innerText = info.badge;
+      document.getElementById('org-detail-desc').innerText = info.desc;
+      document.getElementById('org-detail-transform').innerText = info.transform;
+
+      ['content', 'modifier', 'nesting', 'extensions'].forEach(t => {
+        const card = document.getElementById('org-card-' + t);
+        if (t === type) {
+          card.className = "p-5 bg-glass/95 border-2 border-lavender rounded-2xl cursor-pointer scale-[1.02] shadow-xl transition-all duration-300";
+        } else {
+          card.className = "p-5 bg-glass/80 border border-glassBorder rounded-2xl cursor-pointer hover:border-slate-600 transition-all duration-300";
+        }
+      });
+
+      const lbl = document.getElementById('org-selected-strat-lbl');
+      if (lbl) lbl.innerText = type.toUpperCase();
+
+      if (activeOrgDirectory) {
+        loadOrgDirectoryTree(activeOrgDirectory);
+      }
+    }
+
+    async function selectJunkDepth(type) {
+      ['light', 'deep'].forEach(t => {
+        const card = document.getElementById('junk-card-' + t);
+        if (t === type) {
+          card.className = "p-8 bg-glass/80 border-2 border-lavender rounded-2xl flex flex-col items-center text-center justify-between cursor-pointer scale-[1.01] transition-all";
+        } else {
+          card.className = "p-8 bg-glass/80 border border-glassBorder rounded-2xl flex flex-col items-center text-center justify-between cursor-pointer transition-all";
+        }
+      });
+
+      if (!activeDirectory) {
+        await selectDirectory();
+      }
+    }
+
+    async function saveUpdatePref(mode) {
+      if (window.pywebview && window.pywebview.api) {
+        await window.pywebview.api.save_config({ update_mode: mode });
+      }
+    }
+
+    async function checkForUpdatesAction(manual = false) {
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.check_for_updates();
+        if (res && res.has_update) {
+          const confirmUpdate = confirm(`🚀 ${res.message}\n\nChangelog:\n${(res.changelog || []).join('\n')}\n\nWould you like to download and install this update now?`);
+          if (confirmUpdate) {
+            window.pywebview.api.download_and_apply_update(res.download_url);
+          }
+        } else if (manual) {
+          alert(res.message || "FlexBit AI is up to date!");
+        }
+      }
+    }
+
+    function getEffectivePersonality() {
+      if (selectedPersonality === 'creative') {
+        const sel = document.getElementById('persona-select');
+        return sel ? sel.value : 'Creative';
+      }
+      return selectedPersonality;
+    }
+
+    let activeCheatMode = null; // null, "deeplovesbushu", "romanticdesire"
+
+    function toggleCheatConsole() {
+      const overlay = document.getElementById('cheat-console-overlay');
+      if (overlay) {
+        overlay.classList.toggle('hidden');
+        if (!overlay.classList.contains('hidden')) {
+          const input = document.getElementById('cheat-input-field');
+          if (input) {
+            input.value = "";
+            setTimeout(() => input.focus(), 100);
+          }
+        }
+      }
+    }
+
+    // Keydown listener for ~ (Backquote / KeyCode 192)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '`' || e.key === '~' || e.keyCode === 192) {
+        const active = document.activeElement;
+        if (active && active.id === 'cheat-input-field') return;
+        e.preventDefault();
+        toggleCheatConsole();
+      } else if (e.key === 'Escape') {
+        const overlay = document.getElementById('cheat-console-overlay');
+        if (overlay && !overlay.classList.contains('hidden')) {
+          overlay.classList.add('hidden');
+        }
+      }
+    });
+
+    function executeCheatInput() {
+      const inputEl = document.getElementById('cheat-input-field');
+      const statusEl = document.getElementById('cheat-console-status');
+      if (!inputEl) return;
+
+      const rawInput = inputEl.value.trim().toLowerCase();
+      if (!rawInput) return;
+
+      // Obfuscated Base64 Cheat Checks
+      const codeBushu = atob('ZGVlcGxvdmVzYnVzaHU=');
+      const codeRomantic = atob('cm9tYW50aWNkZXNpcmU=');
+
+      const bgLayer = document.getElementById('app-bg-theme-layer');
+
+      if (rawInput === codeBushu) {
+        if (activeCheatMode === 'deeplovesbushu') {
+          activeCheatMode = null;
+          if (bgLayer) bgLayer.className = "fixed inset-0 pointer-events-none -z-10 bg-obsidian transition-colors duration-700";
+          if (statusEl) statusEl.innerText = "CHEAT DEACTIVATED: RESTORED STANDARD THEME & NAMING SCHEME.";
+          alert("CHEAT DEACTIVATED: Restored Standard Mode.");
+        } else {
+          activeCheatMode = 'deeplovesbushu';
+          if (bgLayer) bgLayer.className = "fixed inset-0 pointer-events-none -z-10 bg-gradient-to-br from-pink-950 via-purple-950 to-rose-950 opacity-70 transition-colors duration-700";
+          if (statusEl) statusEl.innerText = "CHEAT ACTIVATED: 💕 DEEP LOVES BUSHU SECRET MODE 💕";
+          addDynamicNotification("Cheat Activated", "💕 DEEP LOVES BUSHU SECRET MODE 💕", "cheat");
+          alert("🎮 CHEAT ACTIVATED: 💕 DEEP LOVES BUSHU SECRET MODE 💕\n\nAll image renaming outputs overridden to 'deeplovebushu-1.jpg', 'deeplovebushu-2.jpg'!");
+        }
+      } else if (rawInput === codeRomantic) {
+        if (activeCheatMode === 'romanticdesire') {
+          activeCheatMode = null;
+          if (bgLayer) bgLayer.className = "fixed inset-0 pointer-events-none -z-10 bg-obsidian transition-colors duration-700";
+          if (statusEl) statusEl.innerText = "CHEAT DEACTIVATED: RESTORED STANDARD THEME & NAMING SCHEME.";
+          alert("CHEAT DEACTIVATED: Restored Standard Mode.");
+        } else {
+          activeCheatMode = 'romanticdesire';
+          if (bgLayer) bgLayer.className = "fixed inset-0 pointer-events-none -z-10 bg-gradient-to-br from-rose-950 via-red-950 to-slate-950 opacity-70 transition-colors duration-700";
+          if (statusEl) statusEl.innerText = "CHEAT ACTIVATED: 🔥 ROMANTIC PASSION MODE ACTIVATED 🔥";
+          addDynamicNotification("Cheat Activated", "🔥 ROMANTIC PASSION MODE ACTIVATED 🔥", "cheat");
+          alert("🎮 CHEAT ACTIVATED: 🔥 ROMANTIC PASSION MODE ACTIVATED 🔥\n\nUnlocked passionate romantic naming scheme!");
+        }
+      } else if (rawInput === 'deactivate' || rawInput === 'off' || rawInput === 'clear') {
+        activeCheatMode = null;
+        if (bgLayer) bgLayer.className = "fixed inset-0 pointer-events-none -z-10 bg-obsidian transition-colors duration-700";
+        if (statusEl) statusEl.innerText = "ALL CHEATS DEACTIVATED.";
+        alert("All cheat codes deactivated.");
+      } else {
+        if (statusEl) statusEl.innerText = `INVALID CHEAT CODE: '${rawInput.toUpperCase()}'. TRY AGAIN.`;
+      }
+
+      inputEl.value = "";
+      updatePreviewChip();
+      if (activeDirectory) updateLivePreview();
+    }
+
+    function toggleAvatarAdjustPanel() {
+      const panel = document.getElementById('avatar-adjust-controls-panel');
+      if (panel) panel.classList.toggle('hidden');
+    }
+
+    function updatePreviewChip() {
+      if (activeCheatMode === 'deeplovesbushu') {
+        const chip = document.getElementById('output-chip-lbl');
+        if (chip) chip.innerText = "deeplovebushu-1.jpg";
+        return;
+      }
+      if (activeCheatMode === 'romanticdesire') {
+        const chip = document.getElementById('output-chip-lbl');
+        if (chip) chip.innerText = "Midnight_Desire_001_Passionate_Glow.jpg";
+        return;
+      }
+      let lang = document.querySelector('input[name="lang-script"]:checked') ? document.querySelector('input[name="lang-script"]:checked').value : 'English';
+      let body = 'Golden_Retriever_Wheat_Field';
+      if (lang === 'Hinglish') body = 'Gehun_Ke_Khet_Me_Golden_Retriever';
+      else if (lang === 'Gujlish') body = 'Khet_Ma_Golden_Retriever';
+
+      const effectiveP = getEffectivePersonality().toLowerCase();
+      let emoji = "🖼️";
+      if (effectiveP.includes("gamer")) emoji = "🎮";
+      else if (effectiveP.includes("movie")) emoji = "🍿";
+      else if (effectiveP.includes("music")) emoji = "🎵";
+      else if (effectiveP.includes("poetic")) emoji = "🌌";
+      else if (effectiveP.includes("creative")) emoji = "✨";
+
+      if (selectedEmoji === 'leading') emoji = '📸';
+      else if (selectedEmoji === 'contextual') emoji = '🐕';
+      else if (selectedEmoji === 'none') emoji = '';
+
+      const pat = selectedPattern.toUpperCase();
+      let output = "";
+      const dateStr = "2026-05-30_001";
+
+      if (pat.includes("VIBRANT") || pat.includes("BOTH")) {
+        output = `${emoji ? emoji + ' ' : ''}${dateStr}_${body}.jpg`.trim();
+      } else if (pat.includes("TIMESTAMPS")) {
+        output = `${dateStr}_${body}.jpg`;
+      } else if (pat.includes("ORG") || pat.includes("COUNTER")) {
+        output = `001_${body}.jpg`;
+      } else { // Minimalist
+        output = `${body}.jpg`;
+      }
+
+      const chip = document.getElementById('output-chip-lbl');
+      if (chip) chip.innerText = output;
+    }
+
+    // Auto-load history, check onboarding, and check updates when page initializes
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        checkFirstRunOnboarding();
+        loadHistoryData();
+        resolveLastSessionDirectory();
+        checkForUpdatesAction(false);
+      }, 400);
+      setTimeout(() => {
+        loadHistoryData();
+        resolveLastSessionDirectory();
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

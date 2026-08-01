@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so it may be redundant to add them to git.
+*.manifest
+*.spec
+
+# User / Local files & models
+.flexbit_config.json
+*.gguf
+*.tmp
+models/*.gguf
+models/*.tmp
+!models/PUT_GGUF_MODELS_HERE.txt
+
+# Release archives & folders
+FlexBit_AI_v2.5_Windows/
+FlexBit_AI_v2.5_Windows.zip
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
