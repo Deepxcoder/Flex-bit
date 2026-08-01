@@ -177,7 +177,7 @@
           </div>
           <div class="min-w-0 flex flex-col text-left leading-tight">
             <span class="font-bold text-xs text-slate-100 truncate max-w-[90px]" id="header-username">deep</span>
-            <span class="text-[9px] font-semibold text-mint truncate" id="header-usertier">Standard</span>
+            <span class="text-[9px] font-bold text-mint truncate" id="header-user-sessions">0 Sessions</span>
           </div>
         </div>
       </div>
@@ -682,149 +682,181 @@
           </div>
         </div>
 
-        <!-- Clean Selectable Strategy Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="org-strategy-grid">
-          
-          <div onclick="selectOrgStrategy('content')" id="org-card-content" class="p-5 bg-glass/90 border-2 border-lavender rounded-2xl cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-2xl">📁</span>
-              <span class="font-mono text-[10px] font-bold text-mint bg-emerald-950/90 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-content">ACTIVE</span>
-            </div>
-            <div>
-              <h3 class="font-bold text-white text-sm mb-1">By Content</h3>
+        <!-- MODULE 2 CONSISTENT STEP PROGRESS BAR -->
+        <div class="bg-obsidian/80 border border-slate-800 rounded-2xl p-3 flex items-center justify-between shadow-lg">
+          <div onclick="switchOrgStep(1)" id="mod2-step1-nav" class="flex items-center space-x-3 cursor-pointer transition-all">
+            <span id="mod2-step1-badge" class="w-7 h-7 rounded-full bg-lavender text-lavenderDark font-bold text-xs flex items-center justify-center shadow-md">1</span>
+            <span id="mod2-step1-title" class="text-xs font-bold text-white">Step 1: Strategy & Naming</span>
+          </div>
+          <div class="h-[2px] flex-1 bg-slate-800 mx-6"></div>
+          <div onclick="switchOrgStep(2)" id="mod2-step2-nav" class="flex items-center space-x-3 cursor-pointer opacity-60 hover:opacity-100 transition-all">
+            <span id="mod2-step2-badge" class="w-7 h-7 rounded-full bg-slate-900 border border-slate-700 text-slate-400 font-bold text-xs flex items-center justify-center">2</span>
+            <span id="mod2-step2-title" class="text-xs font-bold text-slate-400">Step 2: Tree Preview & Execute</span>
+          </div>
+        </div>
+
+        <!-- MODULE 2 STEP 1 PANEL: STRATEGY & NAMING -->
+        <div id="mod2-step1-panel" class="space-y-6">
+          <!-- Simple Selectable Option Cards (No Bento Grid, No Dynamic Scaling) -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="org-strategy-grid">
+            
+            <!-- By Content Card -->
+            <div onclick="selectOrgStrategy('content')" id="org-card-content" class="p-5 bg-obsidian border-2 border-lavender rounded-2xl cursor-pointer transition-all shadow-xl flex flex-col justify-between space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-xl">📁</span>
+                  <h3 class="font-bold text-white text-sm">By Content</h3>
+                </div>
+                <span class="font-mono text-[10px] font-bold text-mint bg-emerald-950 border border-emerald-800 px-2 py-0.5 rounded-full" id="bento-badge-content">ACTIVE</span>
+              </div>
               <p class="text-xs text-slate-300 leading-relaxed">Categorize by document essence (Invoices, Reports, Photos, Code, Work, Personal).</p>
+              <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
+                <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Invoices/ | /Photos/</span>
+              </div>
             </div>
-            <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
-              <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Invoices/ | /Photos/</span>
-            </div>
-          </div>
 
-          <div onclick="selectOrgStrategy('modifier')" id="org-card-modifier" class="p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-300 hover:border-slate-500 opacity-75 hover:opacity-100 flex flex-col justify-between space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-2xl">📅</span>
-              <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950/90 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-modifier">ACTIVE</span>
-            </div>
-            <div>
-              <h3 class="font-bold text-white text-sm mb-1">Modifier Date</h3>
+            <!-- Modifier Date Card -->
+            <div onclick="selectOrgStrategy('modifier')" id="org-card-modifier" class="p-5 bg-obsidian border border-slate-800 rounded-2xl cursor-pointer hover:border-slate-600 transition-all opacity-70 hover:opacity-100 flex flex-col justify-between space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-xl">📅</span>
+                  <h3 class="font-bold text-white text-sm">Modifier Date</h3>
+                </div>
+                <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950 border border-emerald-800 px-2 py-0.5 rounded-full" id="bento-badge-modifier">ACTIVE</span>
+              </div>
               <p class="text-xs text-slate-400 leading-relaxed">Sort into Year/Month subfolders based on modification timestamp.</p>
+              <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
+                <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/2026-08_Aug/</span>
+              </div>
             </div>
-            <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
-              <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/2026-08_Aug/</span>
-            </div>
-          </div>
 
-          <div onclick="selectOrgStrategy('nesting')" id="org-card-nesting" class="p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-300 hover:border-slate-500 opacity-75 hover:opacity-100 flex flex-col justify-between space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-2xl">🌳</span>
-              <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950/90 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-nesting">ACTIVE</span>
-            </div>
-            <div>
-              <h3 class="font-bold text-white text-sm mb-1">Deep Nesting</h3>
+            <!-- Deep Nesting Card -->
+            <div onclick="selectOrgStrategy('nesting')" id="org-card-nesting" class="p-5 bg-obsidian border border-slate-800 rounded-2xl cursor-pointer hover:border-slate-600 transition-all opacity-70 hover:opacity-100 flex flex-col justify-between space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-xl">🌳</span>
+                  <h3 class="font-bold text-white text-sm">Deep Nesting</h3>
+                </div>
+                <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-nesting">ACTIVE</span>
+              </div>
               <p class="text-xs text-slate-400 leading-relaxed">Complex hierarchical multi-tiered structure (Category/Year/Ext).</p>
+              <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
+                <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Media/2026/PNG/</span>
+              </div>
             </div>
-            <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
-              <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Media/2026/PNG/</span>
-            </div>
-          </div>
 
-          <div onclick="selectOrgStrategy('extensions')" id="org-card-extensions" class="p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-300 hover:border-slate-500 opacity-75 hover:opacity-100 flex flex-col justify-between space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-2xl">🏷️</span>
-              <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950/90 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-extensions">ACTIVE</span>
-            </div>
-            <div>
-              <h3 class="font-bold text-white text-sm mb-1">Extensions</h3>
+            <!-- Extensions Card -->
+            <div onclick="selectOrgStrategy('extensions')" id="org-card-extensions" class="p-5 bg-obsidian border border-slate-800 rounded-2xl cursor-pointer hover:border-slate-600 transition-all opacity-70 hover:opacity-100 flex flex-col justify-between space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-xl">🏷️</span>
+                  <h3 class="font-bold text-white text-sm">Extensions</h3>
+                </div>
+                <span class="hidden font-mono text-[10px] font-bold text-mint bg-emerald-950 border border-emerald-800 px-2.5 py-0.5 rounded-full" id="bento-badge-extensions">ACTIVE</span>
+              </div>
               <p class="text-xs text-slate-400 leading-relaxed">Sort by extension (.pdf, .jpg, .zip, .exe, .py, .mp4).</p>
+              <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
+                <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Images/ | /Documents/</span>
+              </div>
             </div>
-            <div class="pt-2 border-t border-slate-800/80 font-mono text-[10px] text-mint">
-              <span>Path:</span> <span class="bg-slate-950 px-2 py-0.5 rounded border border-slate-800">/Images/ | /Documents/</span>
+
+          </div>
+
+          <!-- Folder Naming Scheme Selector Card -->
+          <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 backdrop-blur-xl space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-white flex items-center space-x-2"><span>🏷️</span> <span>Folder Naming Scheme</span></h3>
+              <span class="font-mono text-[10px] font-bold text-mint bg-emerald-950 border border-emerald-800 px-2.5 py-0.5 rounded-full">STRUCTURE PRESET</span>
+            </div>
+            <p class="text-xs text-slate-400">Choose how target subfolders are named and formatted during organization.</p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div onclick="selectOrgNamingScheme('standard')" id="org-nscheme-standard" class="p-3 bg-obsidian border-2 border-lavender rounded-xl flex flex-col cursor-pointer transition-all">
+                <span class="font-bold text-white text-xs">📁 Standard Title</span>
+                <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/Photos, /Documents, /Code</span>
+              </div>
+
+              <div onclick="selectOrgNamingScheme('lowercase')" id="org-nscheme-lowercase" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
+                <span class="font-bold text-white text-xs">🏷️ Clean Lowercase</span>
+                <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/photos, /documents, /code</span>
+              </div>
+
+              <div onclick="selectOrgNamingScheme('emoji')" id="org-nscheme-emoji" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
+                <span class="font-bold text-white text-xs">✨ Emoji Folders</span>
+                <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/🖼️ Photos, /📄 Documents</span>
+              </div>
+
+              <div onclick="selectOrgNamingScheme('dated')" id="org-nscheme-dated" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
+                <span class="font-bold text-white text-xs">📅 Dated Prefix</span>
+                <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/2026-08_Photos</span>
+              </div>
             </div>
           </div>
 
-        </div>
-
-        <!-- Folder Naming Scheme Selector Card -->
-        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 backdrop-blur-xl space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-base font-bold text-white flex items-center space-x-2"><span>🏷️</span> <span>Folder Naming Scheme</span></h3>
-            <span class="font-mono text-[10px] font-bold text-mint bg-emerald-950 border border-emerald-800 px-2.5 py-0.5 rounded-full">STRUCTURE PRESET</span>
-          </div>
-          <p class="text-xs text-slate-400">Choose how target subfolders are named and formatted during organization.</p>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div onclick="selectOrgNamingScheme('standard')" id="org-nscheme-standard" class="p-3 bg-obsidian border-2 border-lavender rounded-xl flex flex-col cursor-pointer transition-all">
-              <span class="font-bold text-white text-xs">📁 Standard Title</span>
-              <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/Photos, /Documents, /Code</span>
-            </div>
-
-            <div onclick="selectOrgNamingScheme('lowercase')" id="org-nscheme-lowercase" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
-              <span class="font-bold text-white text-xs">🏷️ Clean Lowercase</span>
-              <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/photos, /documents, /code</span>
-            </div>
-
-            <div onclick="selectOrgNamingScheme('emoji')" id="org-nscheme-emoji" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
-              <span class="font-bold text-white text-xs">✨ Emoji Folders</span>
-              <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/🖼️ Photos, /📄 Documents</span>
-            </div>
-
-            <div onclick="selectOrgNamingScheme('dated')" id="org-nscheme-dated" class="p-3 bg-obsidian border border-glassBorder rounded-xl flex flex-col cursor-pointer transition-all hover:border-slate-600">
-              <span class="font-bold text-white text-xs">📅 Dated Prefix</span>
-              <span class="font-mono text-[10px] text-slate-400 mt-1 truncate">/2026-08_Photos</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- MODULE IN-SITU LIVE TELEMETRY BANNER FOR FILE ORG -->
-        <div id="mod-prog-banner-org" class="hidden bg-obsidian/90 border border-lavender/60 rounded-2xl p-5 space-y-3 backdrop-blur-xl shadow-2xl">
-          <div class="flex items-center justify-between">
-            <span class="font-mono text-xs font-bold text-lavender flex items-center space-x-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-lavender animate-ping inline-block"></span>
-              <span id="mod-prog-phase-org">ANALYZING PHASE</span>
-            </span>
-            <span class="font-mono text-xs font-bold text-white bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg" id="mod-prog-badge-org">⚡ [ 0 / 0 Files ] • 0%</span>
-          </div>
-          <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-            <div id="mod-prog-fill-org" class="h-full bg-gradient-to-r from-purple-500 via-lavender to-mint w-0 transition-all duration-300"></div>
-          </div>
-          <p class="font-mono text-xs text-slate-300 truncate" id="mod-prog-file-org">Organizing workspace files...</p>
-        </div>
-
-        <!-- MODULE 2 INSTANT INLINE UNDO BANNER -->
-        <div id="undo-banner-org" class="hidden bg-emerald-950/60 border border-emerald-700/80 rounded-2xl p-4 flex items-center justify-between shadow-xl">
-          <div class="flex items-center space-x-3">
-            <span class="text-2xl">✅</span>
-            <div>
-              <h4 class="font-bold text-emerald-200 text-sm">File Organization Completed Successfully!</h4>
-              <p class="text-xs text-emerald-300/80" id="undo-banner-desc-org">Files grouped into smart subfolders. Revertible anytime.</p>
-            </div>
-          </div>
-          <button onclick="undoLatestSession('org')" class="px-5 py-2.5 bg-emerald-900 hover:bg-emerald-800 border border-emerald-600 text-white rounded-xl font-bold text-xs shadow-lg transition-all flex items-center space-x-2">
-            <span>⏪</span> <span>Undo Last Action</span>
-          </button>
-        </div>
-
-        <!-- Interactive Directory Explorer Container -->
-        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 backdrop-blur-xl space-y-4">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-            <div class="flex items-center space-x-3 min-w-0">
-              <button onclick="navigateOrgParent()" class="px-3 py-1.5 bg-slate-900 border border-slate-700 hover:border-slate-500 rounded-lg text-xs font-bold text-slate-300">⬆ Up Level</button>
-              <span class="font-mono text-xs font-bold text-slate-300 truncate" id="org-current-path-lbl">Directory: No folder selected</span>
-            </div>
-            <button onclick="selectOrgDirectory()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold">📁 Change Folder</button>
-          </div>
-
-          <!-- Folder Tree Grid -->
-          <div id="org-explorer-tree" class="grid grid-cols-3 gap-3 max-h-60 overflow-y-auto p-1">
-            <p class="text-slate-500 text-xs col-span-3">Click 'Select Directory & Organize Files' below to start organizing.</p>
+          <div class="flex justify-end pt-2">
+            <button onclick="switchOrgStep(2)" class="px-7 py-3 rounded-xl bg-lavenderFill hover:bg-lavender text-lavenderDark text-sm font-bold shadow-lg shadow-purple-900/30 transition-all flex items-center space-x-2">
+              <span>Next Step: Live Preview & Execute</span> <span>➔</span>
+            </button>
           </div>
         </div>
 
-        <div class="bg-glass/80 border border-glassBorder rounded-2xl p-5 flex items-center justify-between">
-          <div>
-            <h3 class="font-bold text-white text-base">Ready for File Organization</h3>
-            <p class="text-xs text-slate-400">Selected Strategy: <span id="org-selected-strat-lbl" class="text-mint font-bold uppercase">BY CONTENT</span></p>
+        <!-- MODULE 2 STEP 2 PANEL: LIVE TREE PREVIEW & EXECUTION -->
+        <div id="mod2-step2-panel" class="hidden space-y-6">
+          <!-- MODULE IN-SITU LIVE TELEMETRY BANNER FOR FILE ORG -->
+          <div id="mod-prog-banner-org" class="hidden bg-obsidian/90 border border-lavender/60 rounded-2xl p-5 space-y-3 backdrop-blur-xl shadow-2xl">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs font-bold text-lavender flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-lavender animate-ping inline-block"></span>
+                <span id="mod-prog-phase-org">ANALYZING PHASE</span>
+              </span>
+              <span class="font-mono text-xs font-bold text-white bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg" id="mod-prog-badge-org">⚡ [ 0 / 0 Files ] • 0%</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+              <div id="mod-prog-fill-org" class="h-full bg-gradient-to-r from-purple-500 via-lavender to-mint w-0 transition-all duration-300"></div>
+            </div>
+            <p class="font-mono text-xs text-slate-300 truncate" id="mod-prog-file-org">Organizing workspace files...</p>
           </div>
-          <button onclick="runFileOrganizationAction()" id="org-batch-btn" class="px-7 py-3 rounded-xl bg-lavenderFill hover:bg-lavender text-lavenderDark text-sm font-bold shadow-lg shadow-purple-900/30 transition-all">⚡ Select Directory & Organize Files</button>
+
+          <!-- MODULE 2 INSTANT INLINE UNDO BANNER -->
+          <div id="undo-banner-org" class="hidden bg-emerald-950/60 border border-emerald-700/80 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+            <div class="flex items-center space-x-3">
+              <span class="text-2xl">✅</span>
+              <div>
+                <h4 class="font-bold text-emerald-200 text-sm">File Organization Completed Successfully!</h4>
+                <p class="text-xs text-emerald-300/80" id="undo-banner-desc-org">Files grouped into smart subfolders. Revertible anytime.</p>
+              </div>
+            </div>
+            <button onclick="undoLatestSession('org')" class="px-5 py-2.5 bg-emerald-900 hover:bg-emerald-800 border border-emerald-600 text-white rounded-xl font-bold text-xs shadow-lg transition-all flex items-center space-x-2">
+              <span>⏪</span> <span>Undo Last Action</span>
+            </button>
+          </div>
+
+          <!-- Interactive Directory Explorer Container -->
+          <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 backdrop-blur-xl space-y-4 shadow-xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div class="flex items-center space-x-3 min-w-0">
+                <button onclick="navigateOrgParent()" class="px-3 py-1.5 bg-slate-900 border border-slate-700 hover:border-slate-500 rounded-lg text-xs font-bold text-slate-300">⬆ Up Level</button>
+                <span class="font-mono text-xs font-bold text-slate-300 truncate" id="org-current-path-lbl">Directory: No folder selected</span>
+              </div>
+              <button onclick="selectOrgDirectory()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold shadow-sm">📁 Change Folder</button>
+            </div>
+
+            <!-- Folder Tree Grid -->
+            <div id="org-explorer-tree" class="grid grid-cols-3 gap-3 max-h-60 overflow-y-auto p-1">
+              <p class="text-slate-500 text-xs col-span-3">Select a workspace folder above to view live interactive folder tree organization preview.</p>
+            </div>
+          </div>
+
+          <div class="bg-glass/80 border border-glassBorder rounded-2xl p-5 flex items-center justify-between shadow-xl">
+            <div class="flex items-center space-x-3">
+              <button onclick="switchOrgStep(1)" class="px-4 py-2.5 rounded-xl border border-slate-700 bg-obsidian hover:bg-slate-800 text-slate-200 text-xs font-bold transition-all shadow-md">⬅️ Step Back: Strategy</button>
+              <div>
+                <h3 class="font-bold text-white text-sm">Ready for File Organization</h3>
+                <p class="text-xs text-slate-400">Selected Strategy: <span id="org-selected-strat-lbl" class="text-mint font-bold uppercase">BY CONTENT</span></p>
+              </div>
+            </div>
+            <button onclick="runFileOrganizationAction()" id="org-batch-btn" class="px-7 py-3 rounded-xl bg-lavenderFill hover:bg-lavender text-lavenderDark text-sm font-bold shadow-lg shadow-purple-900/30 transition-all">⚡ Select Directory & Organize Files</button>
+          </div>
         </div>
       </section>
 
@@ -832,45 +864,81 @@
       <!-- SCREEN 5: JUNK QUARANTINE -->
       <!-- ========================================== -->
       <section id="screen-junk" class="screen-view hidden space-y-6 max-w-5xl mx-auto pb-24">
-        <div>
-          <span class="font-mono text-xs font-bold text-mint uppercase">MODULE 3: VISION AI JUNK QUARANTINE</span>
-          <h2 class="text-3xl font-extrabold text-white mt-1">Cleaning & Quarantine Depth</h2>
-          <p class="text-sm text-slate-400">Select your workspace target folder, then pick precision cleanup mode.</p>
-        </div>
-
-        <!-- ACTIVE WORKSPACE TARGET BANNER FOR CLEANING -->
-        <div class="bg-obsidian border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-lg">
-          <div class="flex items-center space-x-3 min-w-0">
-            <span class="text-xl shrink-0">📁</span>
-            <div class="min-w-0">
-              <span class="text-[10px] font-mono font-bold text-lavender uppercase block">TARGET CLEANING FOLDER</span>
-              <p id="junk-dir-label" class="text-xs font-mono text-white truncate">No folder selected. Click Select Folder to pick your target.</p>
-            </div>
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="font-mono text-xs font-bold text-mint uppercase">MODULE 3: VISION AI JUNK QUARANTINE</span>
+            <h2 class="text-3xl font-extrabold text-white mt-1">Cleaning & Quarantine Depth</h2>
+            <p class="text-sm text-slate-400">Select your workspace target folder, then pick precision cleanup mode.</p>
           </div>
-          <button onclick="selectDirectoryForJunk()" class="px-4 py-2 bg-slate-900 border border-slate-700 hover:border-lavender text-white font-bold text-xs rounded-xl shrink-0 transition-all shadow-sm flex items-center space-x-1.5">
-            <span>📁</span> <span>Select Folder</span>
+          <button onclick="switchScreen('screen-home')" class="px-4 py-2 bg-slate-900 border border-slate-700 hover:border-lavender text-slate-200 text-xs font-bold rounded-xl transition-all flex items-center space-x-1.5 shadow-sm">
+            <span>⬅️</span> <span>Back to Home</span>
           </button>
         </div>
 
-        <div class="grid grid-cols-2 gap-6 min-h-[340px]">
-          <!-- Light Clean Card -->
-          <div onclick="selectJunkDepth('light')" id="junk-card-light" class="p-8 bg-glass/80 border border-glassBorder rounded-2xl flex flex-col items-center text-center justify-between cursor-pointer">
-            <div class="flex flex-col items-center">
-              <div class="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center text-3xl mb-4">⬇️</div>
-              <h3 class="text-xl font-bold text-white mb-2">Light Clean</h3>
-              <p class="text-sm text-slate-400 max-w-xs mb-6">Focus on .tmp, .log, installer packages, and 0-byte temporary cache files.</p>
+        <!-- MODULE 3 CONSISTENT STEP PROGRESS BAR -->
+        <div class="bg-obsidian/80 border border-slate-800 rounded-2xl p-3 flex items-center justify-between shadow-lg">
+          <div onclick="switchJunkStep(1)" id="mod3-step1-nav" class="flex items-center space-x-3 cursor-pointer transition-all">
+            <span id="mod3-step1-badge" class="w-7 h-7 rounded-full bg-lavender text-lavenderDark font-bold text-xs flex items-center justify-center shadow-md">1</span>
+            <span id="mod3-step1-title" class="text-xs font-bold text-white">Step 1: Target Workspace Folder</span>
+          </div>
+          <div class="h-[2px] flex-1 bg-slate-800 mx-6"></div>
+          <div onclick="switchJunkStep(2)" id="mod3-step2-nav" class="flex items-center space-x-3 cursor-pointer opacity-60 hover:opacity-100 transition-all">
+            <span id="mod3-step2-badge" class="w-7 h-7 rounded-full bg-slate-900 border border-slate-700 text-slate-400 font-bold text-xs flex items-center justify-center">2</span>
+            <span id="mod3-step2-title" class="text-xs font-bold text-slate-400">Step 2: Quarantine Precision</span>
+          </div>
+        </div>
+
+        <!-- MODULE 3 STEP 1 PANEL: TARGET SELECTION -->
+        <div id="mod3-step1-panel" class="space-y-6">
+          <div class="bg-glass/80 border border-glassBorder rounded-2xl p-6 backdrop-blur-xl space-y-4 shadow-xl">
+            <div class="flex items-center space-x-4">
+              <div class="w-14 h-14 rounded-2xl bg-purple-950/80 border border-purple-800/60 flex items-center justify-center text-3xl text-lavender shrink-0">📁</div>
+              <div>
+                <h3 class="text-base font-bold text-white">Active Target Cleaning Folder</h3>
+                <p class="text-xs text-slate-400">Select the folder you wish to scan for junk, temporary cache, or duplicate shots.</p>
+              </div>
             </div>
-            <button onclick="event.stopPropagation(); selectJunkDepth('light'); runJunkQuarantine('light');" class="w-full py-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-lavender font-bold text-xs text-white transition-all">Select Light Precision</button>
+            <div class="p-4 bg-obsidian rounded-xl border border-slate-800">
+              <span class="font-mono text-[10px] font-bold text-lavender uppercase block mb-1">TARGET FOLDER PATH</span>
+              <p id="junk-dir-label" class="text-xs font-mono text-white truncate">No folder selected. Click Select Folder to pick your target.</p>
+            </div>
+            <div class="flex items-center justify-between pt-2">
+              <button onclick="selectDirectoryForJunk()" class="px-5 py-2.5 bg-slate-900 border border-slate-700 hover:border-lavender text-white font-bold text-xs rounded-xl transition-all flex items-center space-x-2 shadow-sm">
+                <span>📁</span> <span>Select / Change Target Folder</span>
+              </button>
+              <button onclick="switchJunkStep(2)" class="px-7 py-3 rounded-xl bg-lavenderFill hover:bg-lavender text-lavenderDark text-sm font-bold shadow-lg shadow-purple-900/30 transition-all flex items-center space-x-2">
+                <span>Next Step: Choose Precision Mode</span> <span>➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE 3 STEP 2 PANEL: QUARANTINE MODES -->
+        <div id="mod3-step2-panel" class="hidden space-y-6">
+          <div class="grid grid-cols-2 gap-6 min-h-[340px]">
+            <!-- Light Clean Card -->
+            <div onclick="selectJunkDepth('light')" id="junk-card-light" class="p-8 bg-glass/80 border border-glassBorder rounded-2xl flex flex-col items-center text-center justify-between cursor-pointer transition-all hover:border-slate-500 shadow-xl">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center text-3xl mb-4">⬇️</div>
+                <h3 class="text-xl font-bold text-white mb-2">Light Clean</h3>
+                <p class="text-sm text-slate-400 max-w-xs mb-6">Focus on .tmp, .log, installer packages, and 0-byte temporary cache files.</p>
+              </div>
+              <button onclick="event.stopPropagation(); selectJunkDepth('light'); runJunkQuarantine('light');" class="w-full py-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-lavender font-bold text-xs text-white transition-all shadow-md">Select Light Precision</button>
+            </div>
+
+            <!-- Deep Clean Card -->
+            <div onclick="selectJunkDepth('deep')" id="junk-card-deep" class="p-8 bg-glass/80 border-2 border-lavender rounded-2xl flex flex-col items-center text-center justify-between cursor-pointer transition-all shadow-2xl shadow-purple-950/40">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-slate-900 border-2 border-lavender flex items-center justify-center text-3xl mb-4">👁️</div>
+                <h3 class="text-xl font-bold text-white mb-2">Deep Clean</h3>
+                <p class="text-sm text-slate-400 max-w-xs mb-6">Powered by Vision AI. Scans for blurry photos, pitch-black shots, and duplicate screenshots.</p>
+              </div>
+              <button onclick="event.stopPropagation(); selectJunkDepth('deep'); runJunkQuarantine('deep');" class="w-full py-3 rounded-xl bg-lavenderFill text-lavenderDark font-bold text-xs hover:bg-lavender transition-all shadow-lg">Select AI Vision Scan</button>
+            </div>
           </div>
 
-          <!-- Deep Clean Card -->
-          <div onclick="selectJunkDepth('deep')" id="junk-card-deep" class="p-8 bg-glass/80 border-2 border-lavender rounded-2xl flex flex-col items-center text-center justify-between cursor-pointer">
-            <div class="flex flex-col items-center">
-              <div class="w-16 h-16 rounded-full bg-slate-900 border-2 border-lavender flex items-center justify-center text-3xl mb-4">👁️</div>
-              <h3 class="text-xl font-bold text-white mb-2">Deep Clean</h3>
-              <p class="text-sm text-slate-400 max-w-xs mb-6">Powered by Vision AI. Scans for blurry photos, pitch-black shots, and duplicate screenshots.</p>
-            </div>
-            <button onclick="event.stopPropagation(); selectJunkDepth('deep'); runJunkQuarantine('deep');" class="w-full py-3 rounded-xl bg-lavenderFill text-lavenderDark font-bold text-xs hover:bg-lavender transition-all">Select AI Vision Scan</button>
+          <div class="flex justify-start">
+            <button onclick="switchJunkStep(1)" class="px-5 py-2.5 rounded-xl border border-slate-700 bg-obsidian hover:bg-slate-800 text-slate-200 text-xs font-bold transition-all shadow-md">⬅️ Step Back: Select Folder</button>
           </div>
         </div>
 
@@ -2364,14 +2432,19 @@
 
         if (card) {
           if (s === stratKey) {
-            card.className = "p-5 bg-glass/90 border-2 border-lavender rounded-2xl cursor-pointer transition-all duration-300 shadow-2xl shadow-purple-950/50 flex flex-col justify-between space-y-3 opacity-100 scale-[1.02]";
+            card.className = "p-5 bg-obsidian border-2 border-lavender rounded-2xl cursor-pointer transition-all shadow-xl flex flex-col justify-between space-y-3 opacity-100";
             if (badge) badge.classList.remove('hidden');
           } else {
-            card.className = "p-5 bg-glass/60 border border-glassBorder rounded-2xl cursor-pointer transition-all duration-300 hover:border-slate-500 opacity-75 hover:opacity-100 flex flex-col justify-between space-y-3 scale-100";
+            card.className = "p-5 bg-obsidian border border-slate-800 rounded-2xl cursor-pointer hover:border-slate-600 opacity-70 hover:opacity-100 transition-all flex flex-col justify-between space-y-3";
             if (badge) badge.classList.add('hidden');
           }
         }
       });
+
+      const label = document.getElementById('org-selected-strat-lbl');
+      if (label) {
+        label.innerText = stratKey.toUpperCase();
+      }
       updateOrgLivePreviewTree();
     }
 
@@ -2697,6 +2770,66 @@
       }
     }
 
+    let currentOrgStep = 1;
+    function switchOrgStep(stepNum) {
+      currentOrgStep = stepNum;
+      const step1View = document.getElementById('mod2-step1-panel');
+      const step2View = document.getElementById('mod2-step2-panel');
+      const b1 = document.getElementById('mod2-step1-badge');
+      const t1 = document.getElementById('mod2-step1-title');
+      const b2 = document.getElementById('mod2-step2-badge');
+      const t2 = document.getElementById('mod2-step2-title');
+
+      if (stepNum === 1) {
+        if (step1View) step1View.classList.remove('hidden');
+        if (step2View) step2View.classList.add('hidden');
+
+        if (b1) { b1.className = "w-7 h-7 rounded-full bg-lavender text-lavenderDark font-bold text-xs flex items-center justify-center shadow-md"; b1.innerText = "1"; }
+        if (t1) { t1.className = "text-xs font-bold text-white"; }
+        if (b2) { b2.className = "w-7 h-7 rounded-full bg-slate-900 border border-slate-700 text-slate-400 font-bold text-xs flex items-center justify-center"; b2.innerText = "2"; }
+        if (t2) { t2.className = "text-xs font-bold text-slate-400"; }
+      } else {
+        if (step1View) step1View.classList.add('hidden');
+        if (step2View) step2View.classList.remove('hidden');
+
+        if (b1) { b1.className = "w-7 h-7 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold text-xs flex items-center justify-center"; b1.innerText = "✓"; }
+        if (t1) { t1.className = "text-xs font-bold text-slate-300"; }
+        if (b2) { b2.className = "w-7 h-7 rounded-full bg-lavender text-lavenderDark font-bold text-xs flex items-center justify-center shadow-md"; b2.innerText = "2"; }
+        if (t2) { t2.className = "text-xs font-bold text-white"; }
+
+        updateOrgLivePreviewTree();
+      }
+    }
+
+    let currentJunkStep = 1;
+    function switchJunkStep(stepNum) {
+      currentJunkStep = stepNum;
+      const step1View = document.getElementById('mod3-step1-panel');
+      const step2View = document.getElementById('mod3-step2-panel');
+      const b1 = document.getElementById('mod3-step1-badge');
+      const t1 = document.getElementById('mod3-step1-title');
+      const b2 = document.getElementById('mod3-step2-badge');
+      const t2 = document.getElementById('mod3-step2-title');
+
+      if (stepNum === 1) {
+        if (step1View) step1View.classList.remove('hidden');
+        if (step2View) step2View.classList.add('hidden');
+
+        if (b1) { b1.className = "w-7 h-7 rounded-full bg-lavender text-lavenderDark font-bold text-xs flex items-center justify-center shadow-md"; b1.innerText = "1"; }
+        if (t1) { t1.className = "text-xs font-bold text-white"; }
+        if (b2) { b2.className = "w-7 h-7 rounded-full bg-slate-900 border border-slate-700 text-slate-400 font-bold text-xs flex items-center justify-center"; b2.innerText = "2"; }
+        if (t2) { t2.className = "text-xs font-bold text-slate-400"; }
+      } else {
+        if (step1View) step1View.classList.add('hidden');
+        if (step2View) step2View.classList.remove('hidden');
+
+        if (b1) { b1.className = "w-7 h-7 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold text-xs flex items-center justify-center"; b1.innerText = "✓"; }
+        if (t1) { t1.className = "text-xs font-bold text-slate-300"; }
+        if (b2) { b2.className = "w-7 h-7 rounded-full bg-lavender text-lavenderDark font-bold text-xs flex items-center justify-center shadow-md"; b2.innerText = "2"; }
+        if (t2) { t2.className = "text-xs font-bold text-white"; }
+      }
+    }
+
     async function updateAccountScreenMetrics() {
       if (window.pywebview && window.pywebview.api) {
         try {
@@ -2708,6 +2841,12 @@
           let launchCount = (cfg && cfg.app_launch_count) ? cfg.app_launch_count : 1;
           let totalStorageMB = 0;
           let taskTimelineHtml = '';
+
+          // Sync sessions across header bar & sidebar profile
+          const headerSessEl = document.getElementById('header-user-sessions');
+          if (headerSessEl) headerSessEl.innerText = `${totalSessions} Sessions`;
+          const sidebarTierEl = document.getElementById('sidebar-usertier');
+          if (sidebarTierEl) sidebarTierEl.innerText = `${totalSessions} Session(s)`;
 
           if (history && history.length > 0) {
             history.forEach(sess => {
