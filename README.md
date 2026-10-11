@@ -6,25 +6,16 @@ FlexBit AI is a lightweight desktop utility designed to organize, rename, search
 
 ---
 
-## ✨ Features at a Glance
+## ⚡ Core Engine & Capabilities
 
-* 🖼️ **Local AI Photo Renaming**: Replaces cryptic camera names (`IMG_0012.JPG`) with descriptive titles using local vision analysis.
-  * **Styles**: Natural sentences, minimal tags, or creative modes (Gamer 🎮, Movie 🍿, Poetic 🌌).
-  * **Languages**: English, Hinglish, and Gujlish transliteration.
-  * **Custom Formatting**: Add contextual emojis, timestamps, or counters.
-* 🗂️ **Smart File Organization**: Sort thousands of files into clean folders:
-  * **By Content**: Automatically splits into *Images*, *Documents*, *Code*, *Archives*, etc.
-  * **By Date**: Groups files into Year/Month subfolders (`/2026-08_Aug/`).
-  * **By Extension**: Quick extension grouping (`.png`, `.pdf`, `.zip`).
-  * **Deep Nesting**: Multi-tier folder trees for complex projects.
-* 🧹 **Junk Quarantine**: Safe, non-destructive cleanups:
-  * **Light Clean**: Isolates temporary files (`.tmp`, `.log`), installers, and empty 0-byte items.
-  * **Deep AI Clean**: Vision AI detects pitch-black photos, severe motion blur, and duplicate screenshots.
-  * *Files are moved to `.flexbit_quarantine`—never permanently deleted.*
-* 🔎 **Semantic Search**: Find files with plain English descriptions (*"Sunset beach view"*, *"July invoice"*).
-* 📜 **1-Click Undo Vault**: Every action is saved locally. Easily revert any batch operation with a single click.
-* 👤 **Productivity Profiles**: Track time saved, view session activity charts, and choose from 50 custom retro avatars.
-
+| Module | Core Functionality | Supported Modes & Formats |
+| :--- | :--- | :--- |
+| **🖼️ Vision AI Renamer** | On-device semantic image inspection replacing cryptic filenames (`IMG_0041.JPG`) with contextual descriptions. | • **Tones:** Natural, Minimal, Gamer 🎮, Movie 🍿, Poetic 🌌<br>• **Scripts:** English, Hinglish, Gujlish transliteration<br>• **Patterns:** Timestamps, Counters, Contextual Emojis |
+| **🗂️ Workspace Organizer** | Batch clusters thousands of unorganized files into structured folder hierarchies in seconds. | • **By Content:** Images, Docs, Code, Media, Archives<br>• **By Date:** Year/Month tree (`2026/August/`)<br>• **Structural:** Extension grouping & Deep Nesting |
+| **🧹 Quarantine Vault** | Safe, non-destructive isolation separating clutter from critical workspace files into `.flexbit_quarantine`. | • **Light Clean:** Logs (`.log`, `.tmp`), installers, 0-byte items<br>• **Deep Clean:** Vision AI flags blurry or pitch-black shots |
+| **🔎 Semantic Search** | Natural language disk discovery without needing exact filename matches. | • Instant natural search queries (*"July tax invoice"*)<br>• 1-Click dynamic history suggestion chips<br>• Direct Windows Explorer jump button |
+| **📜 1-Click Undo Vault** | Persistent audit logging (`~/.flexbit_history.json`) for instant rollback protection. | • Revert entire batch sessions in 1 click<br>• Granular per-file selective rollback |
+| **👤 Profile & Telemetry** | Local productivity analytics dashboard with canvas avatar personalization. | • Tracks files organized and estimated manual hours saved<br>• 50 retro cyberpunk presets & custom canvas editor |
 ---
 
 ## 🔒 Privacy & Portability
